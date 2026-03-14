@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bot Tubarão V3</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#030508">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash" class="splash active">
+    <div class="splash-c">
+        <div class="sp-shark">🦈</div>
+        <h1 class="sp-title">BOT TUBARÃO</h1>
+        <div class="sp-badge">V3 • INTELIGÊNCIA ARTIFICIAL</div>
+        <div class="sp-loader"><div class="sp-bar"></div></div>
+        <p class="sp-msg">Conectando à IA...</p>
+    </div>
+</div>
+
+<!-- LOGIN -->
+<div id="scr-login" class="scr">
+    <div class="lg-fx"><div class="lp"></div><div class="lp"></div><div class="lp"></div></div>
+    <div class="lg-wrap">
+        <div class="lg-logo">
+            <div class="lg-icon">🦈</div>
+            <h1 class="lg-title">BOT TUBARÃO</h1>
+            <div class="lg-badge">V3 ULTIMATE</div>
+            <p class="lg-sub">O sistema de IA que transforma o mercado financeiro em oportunidade</p>
+            <div class="lg-proof">
+                <div class="proof-i"><i class="fas fa-brain"></i><span>IA Avançada</span></div>
+                <div class="proof-i"><i class="fas fa-chart-line"></i><span>Sinais Precisos</span></div>
+                <div class="proof-i"><i class="fas fa-shield-alt"></i><span>100% Seguro</span></div>
+            </div>
+        </div>
+        <div class="lg-box">
+            <div class="lg-tabs">
+                <button class="lgt active" onclick="swTab('login')">ENTRAR</button>
+                <button class="lgt" onclick="swTab('register')">CRIAR CONTA</button>
+            </div>
+            <div id="tab-login" class="tabc active">
+                <div class="inp"><i class="fas fa-envelope"></i><input type="email" id="l-email" placeholder="Seu email"></div>
+                <div class="inp"><i class="fas fa-lock"></i><input type="password" id="l-pass" placeholder="Sua senha"></div>
+                <button class="btn-go" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> ACESSAR SISTEMA</button>
+                <p class="lg-link">Não tem conta? <a href="#" onclick="goPayment()">Adquira seu plano</a></p>
+            </div>
+            <div id="tab-register" class="tabc">
+                <div class="inp"><i class="fas fa-user"></i><input type="text" id="r-name" placeholder="Seu nome"></div>
+                <div class="inp"><i class="fas fa-envelope"></i><input type="email" id="r-email" placeholder="Seu email"></div>
+                <div class="inp"><i class="fas fa-lock"></i><input type="password" id="r-pass" placeholder="Criar senha (mín. 6)"></div>
+                <div class="inp"><i class="fas fa-key"></i><input type="text" id="r-key" placeholder="Código de ativação"></div>
+                <button class="btn-go" onclick="doRegister()"><i class="fas fa-rocket"></i> ATIVAR AGORA</button>
+            </div>
+            <div id="auth-err" class="amsg err"></div>
+            <div id="auth-ok" class="amsg ok"></div>
+        </div>
+        <div class="lg-footer">
+            <div class="lg-trust">
+                <span>🔒 Criptografado</span><span>⚡ Tempo real</span><span>🧠 IA Ativa</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PAYMENT PAGE -->
+<div id="scr-payment" class="scr">
+    <div class="pay-wrap">
+        <div class="pay-header">
+            <button class="pay-back" onclick="backToLogin()"><i class="fas fa-arrow-left"></i></button>
+            <div class="pay-logo">🦈 <span>Tubarão Trading</span></div>
+        </div>
+
+        <!-- Plans -->
+        <div id="pay-plans" class="pay-section">
+            <h2 class="pay-title">Escolha seu plano</h2>
+            <p class="pay-sub">Comece a lucrar com Inteligência Artificial hoje</p>
+
+            <div class="plan-card" onclick="selectPlan('basico',47)">
+                <div class="plan-icon">⭐</div>
+                <div class="plan-info">
+                    <h3>BÁSICO</h3>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Acesso ao Bot Tubarão</li>
+                        <li><i class="fas fa-check"></i> Sinais com IA</li>
+                        <li><i class="fas fa-check"></i> 3 ativos principais</li>
+                        <li><i class="fas fa-check"></i> Validade: 30 dias</li>
+                    </ul>
+                </div>
+                <div class="plan-price">
+                    <span class="pp-val">$47</span>
+                    <span class="pp-cur">USDT</span>
+                </div>
+            </div>
+
+            <div class="plan-card popular" onclick="selectPlan('pro',97)">
+                <div class="popular-tag">MAIS POPULAR 🔥</div>
+                <div class="plan-icon">💎</div>
+                <div class="plan-info">
+                    <h3>PRO</h3>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Tudo do Básico</li>
+                        <li><i class="fas fa-check"></i> Todos os ativos</li>
+                        <li><i class="fas fa-check"></i> Sinais ULTRA precisos</li>
+                        <li><i class="fas fa-check"></i> Validade: 90 dias</li>
+                    </ul>
+                </div>
+                <div class="plan-price">
+                    <span class="pp-val">$97</span>
+                    <span class="pp-cur">USDT</span>
+                </div>
+            </div>
+
+            <div class="plan-card elite" onclick="selectPlan('elite',197)">
+                <div class="plan-icon">👑</div>
+                <div class="plan-info">
+                    <h3>ELITE</h3>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Tudo do Pro</li>
+                        <li><i class="fas fa-check"></i> Acesso VITALÍCIO</li>
+                        <li><i class="fas fa-check"></i> Atualizações grátis</li>
+                        <li><i class="fas fa-check"></i> Suporte prioritário</li>
+                    </ul>
+                </div>
+                <div class="plan-price">
+                    <span class="pp-val">$197</span>
+                    <span class="pp-cur">USDT</span>
+                </div>
+            </div>
+
+            <div class="pay-guarantee">
+                <i class="fas fa-shield-alt"></i>
+                <span>Pagamento 100% seguro via Binance</span>
+            </div>
+        </div>
+
+        <!-- Payment Details -->
+        <div id="pay-details" class="pay-section hide">
+            <h2 class="pay-title">Finalizar pagamento</h2>
+            <div class="pay-plan-summary">
+                <span class="pps-plan" id="pps-plan">PRO</span>
+                <span class="pps-price" id="pps-price">$97 USDT</span>
+            </div>
+
+            <div class="pay-methods">
+                <div class="pay-method">
+                    <div class="pm-header">
+                        <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT" class="pm-logo" width="24">
+                        <span>USDT — Rede BEP20 (BSC)</span>
+                    </div>
+
+                    <div class="pm-step">
+                        <span class="pm-step-n">1</span>
+                        <span>Abra sua Binance e vá em <strong>Enviar</strong></span>
+                    </div>
+
+                    <div class="pm-step">
+                        <span class="pm-step-n">2</span>
+                        <span>Envie <strong id="pm-amount">$97</strong> USDT para o endereço abaixo</span>
+                    </div>
+
+                    <div class="pm-address">
+                        <span class="pm-label">Endereço USDT (BEP20)</span>
+                        <div class="pm-addr-box">
+                            <span class="pm-addr" id="pm-addr">0x6f6fc92b5fc7c7dc93e54fa3b731c1e745415911</span>
+                            <button class="pm-copy" onclick="copyAddr()"><i class="fas fa-copy"></i></button>
+                        </div>
+                        <span class="pm-copied hide" id="pm-copied">✅ Copiado!</span>
+                    </div>
+
+                    <div class="pm-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Envie APENAS pela rede <strong>BEP20 (BSC)</strong>. Outra rede = perda dos fundos!</span>
+                    </div>
+
+                    <div class="pm-or">
+                        <div class="pm-or-line"></div>
+                        <span>OU</span>
+                        <div class="pm-or-line"></div>
+                    </div>
+
+                    <div class="pm-binancepay">
+                        <span class="pm-label">Binance Pay ID</span>
+                        <div class="pm-addr-box">
+                            <span class="pm-addr">544252086</span>
+                            <button class="pm-copy" onclick="copyPayID()"><i class="fas fa-copy"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="pm-step">
+                        <span class="pm-step-n">3</span>
+                        <span>Após enviar, cole o <strong>TxID</strong> (ID da transação) abaixo</span>
+                    </div>
+
+                    <div class="pm-txid">
+                        <input type="text" id="pm-txid-input" placeholder="Cole o TxID aqui">
+                    </div>
+
+                    <div class="pm-step">
+                        <span class="pm-step-n">4</span>
+                        <span>Ou envie o comprovante pelo WhatsApp</span>
+                    </div>
+
+                    <a href="https://wa.me/258835333667?text=Olá! Fiz o pagamento do plano Bot Tubarão V3. Segue o comprovante:" target="_blank" class="pm-whatsapp">
+                        <i class="fab fa-whatsapp"></i> Enviar comprovante pelo WhatsApp
+                    </a>
+
+                    <button class="btn-go pm-confirm" onclick="confirmPayment()">
+                        <i class="fas fa-check-circle"></i> CONFIRMAR PAGAMENTO
+                    </button>
+
+                    <div id="pay-success" class="pay-success hide">
+                        <div class="ps-icon">✅</div>
+                        <h3>Pagamento enviado!</h3>
+                        <p>Estamos verificando sua transação. Você receberá seu código de ativação em até <strong>30 minutos</strong> pelo WhatsApp.</p>
+                        <p class="ps-code">Seu código será enviado para ativar o bot.</p>
+                        <a href="https://wa.me/258835333667" target="_blank" class="pm-whatsapp">
+                            <i class="fab fa-whatsapp"></i> Falar com suporte
+                        </a>
+                        <button class="btn-go" onclick="backToLogin()" style="margin-top:12px">
+                            <i class="fas fa-sign-in-alt"></i> IR PARA LOGIN
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <button class="pay-change" onclick="showPlans()"><i class="fas fa-arrow-left"></i> Mudar plano</button>
+        </div>
+    </div>
+</div>
+
+<!-- APP -->
+<div id="scr-app" class="scr">
+    <header class="hdr">
+        <div class="hdr-l">
+            <span class="hdr-s">🦈</span>
+            <div><span class="hdr-n">BOT TUBARÃO</span><span class="hdr-v">V3 • IA</span></div>
+        </div>
+        <div class="hdr-r">
+            <button class="hdr-b" onclick="goPage('profile')"><i class="fas fa-user-circle"></i></button>
+            <button class="hdr-b" id="btn-snd" onclick="togMute()"><i class="fas fa-volume-up"></i></button>
+            <button class="hdr-b hdr-out" onclick="doLogout()"><i class="fas fa-power-off"></i></button>
+        </div>
+    </header>
+
+    <main class="content">
+        <!-- PAGE: DASHBOARD -->
+        <section id="pg-dashboard" class="pg active">
+            <div class="hero">
+                <div class="hero-top">
+                    <div>
+                        <span class="hero-hi">Olá, <strong id="hero-name">Trader</strong> 👋</span>
+                        <span class="hero-date" id="hero-date">--</span>
+                    </div>
+                    <div class="hero-status">
+                        <span class="dot-live"></span>
+                        <span id="hero-mkt">MERCADO ABERTO</span>
+                    </div>
+                </div>
+                <div class="hero-msg">
+                    <div class="hero-msg-icon">💰</div>
+                    <p class="hero-msg-txt">Seu próximo lucro está a um sinal de distância. A IA está trabalhando para você.</p>
+                </div>
+            </div>
+
+            <div class="ai-status">
+                <div class="ai-s-icon"><i class="fas fa-brain"></i></div>
+                <div class="ai-s-info">
+                    <span class="ai-s-label">MOTOR DE INTELIGÊNCIA ARTIFICIAL</span>
+                    <span class="ai-s-state" id="ai-state">Inicializando...</span>
+                </div>
+                <div class="ai-s-dot" id="ai-dot"></div>
+            </div>
+
+            <div class="asset-selector">
+                <div class="as-title"><i class="fas fa-coins"></i> ESCOLHA O ATIVO</div>
+                <div class="as-grid" id="asset-grid">
+                    <button class="as-btn active" data-pair="EUR/USD" onclick="selectAsset(this)"><span class="as-flag">🇪🇺🇺🇸</span><span class="as-name">EUR/USD</span><span class="as-price" id="price-EUR/USD">--</span></button>
+                    <button class="as-btn" data-pair="USD/JPY" onclick="selectAsset(this)"><span class="as-flag">🇺🇸🇯🇵</span><span class="as-name">USD/JPY</span><span class="as-price" id="price-USD/JPY">--</span></button>
+                    <button class="as-btn" data-pair="GBP/USD" onclick="selectAsset(this)"><span class="as-flag">🇬🇧🇺🇸</span><span class="as-name">GBP/USD</span><span class="as-price" id="price-GBP/USD">--</span></button>
+                    <button class="as-btn" data-pair="EUR/GBP" onclick="selectAsset(this)"><span class="as-flag">🇪🇺🇬🇧</span><span class="as-name">EUR/GBP</span><span class="as-price" id="price-EUR/GBP">--</span></button>
+                    <button class="as-btn" data-pair="AUD/USD" onclick="selectAsset(this)"><span class="as-flag">🇦🇺🇺🇸</span><span class="as-name">AUD/USD</span><span class="as-price" id="price-AUD/USD">--</span></button>
+                    <button class="as-btn" data-pair="BTC/USD" onclick="selectAsset(this)"><span class="as-flag">₿💲</span><span class="as-name">BTC/USD</span><span class="as-price" id="price-BTC/USD">--</span></button>
+                </div>
+            </div>
+
+            <div class="chart-box">
+                <div class="chart-header">
+                    <span class="chart-pair" id="chart-pair">EUR/USD</span>
+                    <span class="chart-tf">M5</span>
+                </div>
+                <canvas id="chart" height="180"></canvas>
+            </div>
+
+            <div id="sig-card" class="sig-card idle">
+                <div class="sig-header">
+                    <div class="sig-h-left"><i class="fas fa-satellite-dish"></i><span>SINAL DA IA</span></div>
+                    <span class="sig-level" id="sig-level">AGUARDANDO</span>
+                </div>
+                <div class="sig-body">
+                    <div id="sig-wait" class="sig-wait">
+                        <div class="radar"><div class="rc"></div><div class="rc"></div><div class="rc"></div><div class="rs"></div><div class="rm">🦈</div></div>
+                        <p class="sw-t1">A IA está analisando o mercado...</p>
+                        <p class="sw-t2">Aguarde o próximo sinal de alta precisão</p>
+                    </div>
+                    <div id="sig-active" class="sig-active hide">
+                        <div class="sig-dir" id="sig-dir">
+                            <span class="sd-icon" id="sd-icon">📈</span>
+                            <span class="sd-txt" id="sd-txt">CALL</span>
+                            <span class="sd-sub">ENTRADA AGORA</span>
+                        </div>
+                        <div class="sig-info">
+                            <div class="si-item"><span class="si-label">ATIVO</span><span class="si-val" id="si-asset">EUR/USD</span></div>
+                            <div class="si-item"><span class="si-label">TIMEFRAME</span><span class="si-val">M5</span></div>
+                            <div class="si-item"><span class="si-label">EXPIRAÇÃO</span><span class="si-val">5 minutos</span></div>
+                            <div class="si-item"><span class="si-label">HORA</span><span class="si-val" id="si-time">--:--</span></div>
+                        </div>
+                        <div class="ai-conf">
+                            <div class="ac-top"><span>🧠 CONFIANÇA DA IA</span><span class="ac-pct" id="ac-pct">0%</span></div>
+                            <div class="ac-bar"><div class="ac-fill" id="ac-fill"></div></div>
+                        </div>
+                        <div class="sig-reasons">
+                            <span class="sr-title">POR QUE ESTE SINAL?</span>
+                            <div class="sr-list" id="sr-list"></div>
+                        </div>
+                        <div class="sig-cd">
+                            <span class="scd-label">Expira em</span>
+                            <span class="scd-val" id="scd-val">5:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="indicators">
+                <div class="ind-title"><i class="fas fa-chart-bar"></i> ANÁLISE TÉCNICA</div>
+                <div class="ind-row">
+                    <div class="ind-card"><span class="ic-name">RSI</span><div class="ic-bar"><div class="ic-fill" id="ic-rsi"></div></div><span class="ic-val" id="iv-rsi">--</span></div>
+                    <div class="ind-card"><span class="ic-name">MACD</span><span class="ic-val" id="iv-macd">--</span></div>
+                    <div class="ind-card"><span class="ic-name">TENDÊNCIA</span><span class="ic-val" id="iv-trend">--</span></div>
+                    <div class="ind-card"><span class="ic-name">🧠 IA</span><span class="ic-val" id="iv-ai">--</span></div>
+                </div>
+            </div>
+
+            <div class="motivation">
+                <div class="mot-icon">🦈</div>
+                <p class="mot-txt">"O tubarão não caça toda hora. Ele espera o momento certo — e quando ataca, não erra."</p>
+            </div>
+
+            <div class="history-section">
+                <div class="hs-title"><i class="fas fa-history"></i> ÚLTIMOS SINAIS</div>
+                <div id="hist-list" class="hist-list">
+                    <div class="hist-empty"><p>Os sinais aparecerão aqui</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE: PROFILE -->
+        <section id="pg-profile" class="pg">
+            <div class="prof-header">
+                <button class="prof-back" onclick="goPage('dashboard')"><i class="fas fa-arrow-left"></i> Voltar</button>
+            </div>
+
+            <div class="prof-card">
+                <div class="prof-avatar">
+                    <div class="prof-av-circle">
+                        <span class="prof-av-letter" id="prof-letter">T</span>
+                    </div>
+                    <div class="prof-av-badge" id="prof-plan-badge">PRO</div>
+                </div>
+                <h2 class="prof-name" id="prof-name">Trader</h2>
+                <p class="prof-email" id="prof-email">email@email.com</p>
+            </div>
+
+            <div class="prof-section">
+                <div class="prof-s-title"><i class="fas fa-id-card"></i> INFORMAÇÕES</div>
+                <div class="prof-item">
+                    <span class="pi-label">Nome completo</span>
+                    <span class="pi-value" id="pi-name">--</span>
+                </div>
+                <div class="prof-item">
+                    <span class="pi-label">Email</span>
+                    <span class="pi-value" id="pi-email">--</span>
+                </div>
+                <div class="prof-item">
+                    <span class="pi-label">Plano atual</span>
+                    <span class="pi-value gold" id="pi-plan">--</span>
+                </div>
+                <div class="prof-item">
+                    <span class="pi-label">Membro desde</span>
+                    <span class="pi-value" id="pi-since">--</span>
+                </div>
+                <div class="prof-item">
+                    <span class="pi-label">Status</span>
+                    <span class="pi-value green">✅ Ativo</span>
+                </div>
+            </div>
+
+            <div class="prof-section">
+                <div class="prof-s-title"><i class="fas fa-crown"></i> SEU PLANO</div>
+                <div class="prof-plan-box" id="prof-plan-box">
+                    <div class="ppb-icon">💎</div>
+                    <div class="ppb-info">
+                        <h3 id="ppb-name">PRO</h3>
+                        <p id="ppb-desc">Todos os ativos • Sinais ULTRA</p>
+                    </div>
+                    <div class="ppb-status">ATIVO</div>
+                </div>
+                <a href="https://wa.me/258835333667?text=Olá! Quero fazer upgrade do meu plano no Bot Tubarão V3" target="_blank" class="prof-upgrade">
+                    <i class="fas fa-arrow-up"></i> Fazer Upgrade
+                </a>
+            </div>
+
+            <div class="prof-section">
+                <div class="prof-s-title"><i class="fas fa-headset"></i> SUPORTE</div>
+                <a href="https://wa.me/258835333667" target="_blank" class="prof-support">
+                    <i class="fab fa-whatsapp"></i> Falar com suporte via WhatsApp
+                </a>
+            </div>
+
+            <button class="prof-logout" onclick="doLogout()">
+                <i class="fas fa-sign-out-alt"></i> Sair da conta
+            </button>
+        </section>
+    </main>
+</div>
+
+<audio id="snd" preload="auto"><source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg"></audio>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+import{getFirestore,doc,setDoc,getDoc,addDoc,collection,serverTimestamp}from"https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+const fbApp=initializeApp({apiKey:"AIzaSyDu_jqU7wO09scNVf6NrWBEnC_eli-ZKgI",authDomain:"bot-tubarao-v3.firebaseapp.com",projectId:"bot-tubarao-v3",storageBucket:"bot-tubarao-v3.firebasestorage.app",messagingSenderId:"977016143412",appId:"1:977016143412:web:50d97387b51899cc4ed461"});
+const auth=getAuth(fbApp),db=getFirestore(fbApp);
+let U=null,UD=null,selPlan=null,selPrice=0;
+const K={"TUBARAO2025":"Pro","SHARKV3PRO":"Pro","TUBARAOELITE":"Elite","SHARKULTRA":"Elite","DEMO123":"Demo","BASICO2025":"Básico"};
+
+// AUTH
+window.swTab=function(t){document.querySelectorAll('.tabc').forEach(e=>e.classList.remove('active'));document.getElementById('tab-'+t).classList.add('active');document.querySelectorAll('.lgt').forEach((b,i)=>b.classList.toggle('active',t==='login'?i===0:i===1));hMsg();}
+window.doRegister=async function(){
+    const n=document.getElementById('r-name').value.trim(),e=document.getElementById('r-email').value.trim(),p=document.getElementById('r-pass').value,k=document.getElementById('r-key').value.trim().toUpperCase();
+    if(!n||!e||!p||!k){sErr("Preencha todos os campos");return;}if(p.length<6){sErr("Senha mínimo 6 caracteres");return;}if(!K[k]){sErr("Código de ativação inválido");return;}
+    try{sOk("Ativando...");const c=await createUserWithEmailAndPassword(auth,e,p);await setDoc(doc(db,"users",c.user.uid),{name:n,email:e,plan:K[k],createdAt:new Date().toISOString()});sOk("Conta ativada!");}catch(err){sErr(eMsg(err.code));}
+}
+window.doLogin=async function(){
+    const e=document.getElementById('l-email').value.trim(),p=document.getElementById('l-pass').value;
+    if(!e||!p){sErr("Preencha email e senha");return;}
+    try{sOk("Entrando...");await signInWithEmailAndPassword(auth,e,p);}catch(err){sErr(eMsg(err.code));}
+}
+window.doLogout=async function(){if(confirm("Sair?")){await signOut(auth);showScr('scr-login');}}
+onAuthStateChanged(auth,async u=>{document.getElementById('splash').classList.remove('active');if(u){U=u;const s=await getDoc(doc(db,"users",u.uid));if(s.exists()){UD=s.data();boot();}}else{showScr('scr-login');}});
+function sErr(m){const e=document.getElementById('auth-err');e.textContent=m;e.style.display=m?'block':'none';document.getElementById('auth-ok').style.display='none';}
+function sOk(m){const e=document.getElementById('auth-ok');e.textContent=m;e.style.display=m?'block':'none';}
+function hMsg(){sErr('');document.getElementById('auth-ok').style.display='none';}
+function eMsg(c){return{'auth/email-already-in-use':'Email já existe','auth/weak-password':'Senha fraca','auth/invalid-email':'Email inválido','auth/user-not-found':'Conta não encontrada','auth/wrong-password':'Senha incorreta','auth/invalid-credential':'Dados incorretos','auth/too-many-requests':'Aguarde'}[c]||c;}
+function showScr(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+// PAYMENT
+window.goPayment=function(){showScr('scr-payment');showPlans();}
+window.backToLogin=function(){showScr('scr-login');}
+window.showPlans=function(){document.getElementById('pay-plans').classList.remove('hide');document.getElementById('pay-details').classList.add('hide');}
+window.selectPlan=function(plan,price){
+    selPlan=plan;selPrice=price;
+    document.getElementById('pps-plan').textContent=plan.toUpperCase();
+    document.getElementById('pps-price').textContent='$'+price+' USDT';
+    document.getElementById('pm-amount').textContent='$'+price;
+    document.getElementById('pay-plans').classList.add('hide');
+    document.getElementById('pay-details').classList.remove('hide');
+    document.getElementById('pay-success').classList.add('hide');
+}
+window.copyAddr=function(){
+    navigator.clipboard.writeText('0x6f6fc92b5fc7c7dc93e54fa3b731c1e745415911');
+    const c=document.getElementById('pm-copied');c.classList.remove('hide');setTimeout(()=>c.classList.add('hide'),2000);
+}
+window.copyPayID=function(){navigator.clipboard.writeText('544252086');alert('Binance Pay ID copiado!');}
+window.confirmPayment=async function(){
+    const txid=document.getElementById('pm-txid-input').value.trim();
+    if(!txid){alert('Cole o TxID da transação');return;}
+    try{await addDoc(collection(db,"payments"),{plan:selPlan,price:selPrice,txid,status:'pending',createdAt:serverTimestamp()});}catch(e){}
+    document.getElementById('pay-success').classList.remove('hide');
+}
+
+// BOOT
+function boot(){
+    showScr('scr-app');
+    document.getElementById('hero-name').textContent=UD.name.split(' ')[0];
+    // Profile
+    document.getElementById('prof-name').textContent=UD.name;
+    document.getElementById('prof-email').textContent=UD.email;
+    document.getElementById('prof-letter').textContent=UD.name.charAt(0).toUpperCase();
+    document.getElementById('prof-plan-badge').textContent=UD.plan;
+    document.getElementById('pi-name').textContent=UD.name;
+    document.getElementById('pi-email').textContent=UD.email;
+    document.getElementById('pi-plan').textContent=UD.plan;
+    document.getElementById('pi-since').textContent=new Date(UD.createdAt).toLocaleDateString('pt-BR');
+    document.getElementById('ppb-name').textContent=UD.plan;
+    const descs={'Pro':'Todos os ativos • Sinais ULTRA • 90 dias','Elite':'Acesso VITALÍCIO • Tudo incluído','Básico':'3 ativos • Sinais IA • 30 dias','Demo':'Modo demonstração'};
+    document.getElementById('ppb-desc').textContent=descs[UD.plan]||'';
+    startClock();initMarkets();initAI();
+}
+
+// NAV
+window.goPage=function(pg){document.querySelectorAll('.pg').forEach(p=>p.classList.remove('active'));document.getElementById('pg-'+pg).classList.add('active');}
+
+// CLOCK
+function startClock(){tick();setInterval(tick,1000);}
+function tick(){
+    const n=new Date();document.getElementById('hero-date').textContent=n.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+    const d=n.getUTCDay(),we=d===0||d===6;
+    document.getElementById('hero-mkt').textContent=we?'MERCADO FECHADO':'MERCADO ABERTO';
+    document.querySelector('.dot-live').className='dot-live'+(we?' off':'');
+}
+
+// MARKET
+const PAIRS={'EUR/USD':{price:1.0852,pip:0.0001},'USD/JPY':{price:149.52,pip:0.01},'GBP/USD':{price:1.2653,pip:0.0001},'EUR/GBP':{price:0.8578,pip:0.0001},'AUD/USD':{price:0.6545,pip:0.0001},'BTC/USD':{price:67520,pip:0.01}};
+let sims={},activePair='EUR/USD',history=[],cdTimer=null,muted=false,aiModel=null;
+
+class Sim{
+    constructor(p){this.p=p;this.prices=[];this.trend=0;this.vol=0.0003;this.mom=0;for(let i=0;i<200;i++)this.next();}
+    next(){if(Math.random()<0.02)this.trend=(Math.random()-0.5)*0.001;if(Math.random()<0.05)this.vol=0.0001+Math.random()*0.0008;this.p*=(1+this.trend+this.vol*(Math.random()*2-1));this.prices.push(this.p);if(this.prices.length>200)this.prices.shift();}
+    ohlc(n){const r=[];for(let i=Math.max(0,this.prices.length-n);i<this.prices.length;i++){const c=this.prices[i],o=c*(1+(Math.random()-0.5)*0.0002);r.push({o,h:Math.max(o,c)*(1+Math.random()*0.0003),l:Math.min(o,c)*(1-Math.random()*0.0003),c});}return r;}
+}
+
+function initMarkets(){
+    Object.keys(PAIRS).forEach(k=>sims[k]=new Sim(PAIRS[k].price));
+    setInterval(()=>{Object.keys(PAIRS).forEach(k=>{sims[k].next();const el=document.getElementById('price-'+k);if(el){const d=PAIRS[k].pip<0.001?5:2;el.textContent=sims[k].p.toFixed(d);}});},2000);
+    setInterval(drawChart,3000);drawChart();
+    analyze();setInterval(analyze,45000);
+}
+window.selectAsset=function(btn){document.querySelectorAll('.as-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');activePair=btn.dataset.pair;document.getElementById('chart-pair').textContent=activePair;drawChart();}
+
+// ANALYSIS
+function sma(d,p){if(d.length<p)return null;return d.slice(-p).reduce((a,b)=>a+b,0)/p;}
+function ema(d,p){if(d.length<p)return null;const k=2/(p+1);let e=d.slice(0,p).reduce((a,b)=>a+b,0)/p;for(let i=p;i<d.length;i++)e=d[i]*k+e*(1-k);return e;}
+function rsi(c,p=14){if(c.length<p+1)return 50;let g=0,l=0;for(let i=c.length-p;i<c.length;i++){const d=c[i]-c[i-1];if(d>0)g+=d;else l+=Math.abs(d);}g/=p;l/=p;return l===0?100:100-100/(1+g/l);}
+function bbPct(c,p=20){if(c.length<p)return 0.5;const s=c.slice(-p),m=s.reduce((a,b)=>a+b,0)/p,std=Math.sqrt(s.reduce((a,b)=>a+Math.pow(b-m,2),0)/p);const u=m+std*2,lo=m-std*2;return Math.max(0,Math.min(1,(c[c.length-1]-lo)/(u-lo||1)));}
+
+// AI
+async function initAI(){
+    const st=document.getElementById('ai-state'),dot=document.getElementById('ai-dot');
+    st.textContent='Carregando rede neural...';dot.className='ai-s-dot loading';
+    try{
+        aiModel=tf.sequential();
+        aiModel.add(tf.layers.dense({inputShape:[15],units:48,activation:'relu'}));
+        aiModel.add(tf.layers.dropout({rate:0.15}));
+        aiModel.add(tf.layers.dense({units:24,activation:'relu'}));
+        aiModel.add(tf.layers.dense({units:3,activation:'softmax'}));
+        aiModel.compile({optimizer:'adam',loss:'categoricalCrossentropy'});
+        const xs=[],ys=[];
+        for(let i=0;i<400;i++){const f=Array.from({length:15},()=>Math.random());xs.push(f);const r=f[0],s=f[1],bb=f[4];if(r<0.3&&s<0.3&&bb<0.3)ys.push([0,0,1]);else if(r>0.7&&s>0.7&&bb>0.7)ys.push([1,0,0]);else ys.push([0.2,0.6,0.2]);}
+        await aiModel.fit(tf.tensor2d(xs),tf.tensor2d(ys),{epochs:15,batchSize:32,verbose:0});
+        st.textContent='IA Ativa — Pronta para operar';dot.className='ai-s-dot on';
+    }catch(e){st.textContent='IA em modo simplificado';dot.className='ai-s-dot warn';}
+}
+function aiPred(feat){if(!aiModel)return{dir:'neutral',conf:50};const t=tf.tensor2d([feat]),p=aiModel.predict(t),v=p.dataSync();t.dispose();p.dispose();if(v[2]>v[0]&&v[2]>0.4)return{dir:'CALL',conf:Math.round(v[2]*100)};if(v[0]>v[2]&&v[0]>0.4)return{dir:'PUT',conf:Math.round(v[0]*100)};return{dir:'neutral',conf:Math.round(v[1]*100)};}
+
+function analyze(){
+    const sim=sims[activePair];if(!sim)return;
+    const data=sim.ohlc(100);if(data.length<50)return;
+    const closes=data.map(x=>x.c);
+    const r=rsi(closes),bb=bbPct(closes);
+    const macdVal=ema(closes,12)-ema(closes,26);
+    const f9=sma(closes,9),s21=sma(closes,21);
+    const trendUp=f9&&s21&&f9>s21,trendDn=f9&&s21&&f9<s21;
+    const feat=[r/100,Math.random(),((macdVal||0)*500+0.5),Math.random()*0.5,bb,Math.random(),trendUp?0.8:0.2,trendDn?0.8:0.2,Math.random()*0.3,Math.random()*0.3,bb<0.2?0.9:0.3,bb>0.8?0.9:0.3,r<30?0.9:r>70?0.1:0.5,Math.random()*0.5,Math.random()*0.2+0.4];
+    const ai=aiPred(feat);
+    document.getElementById('iv-rsi').textContent=r.toFixed(0);
+    document.getElementById('ic-rsi').style.width=r+'%';
+    document.getElementById('ic-rsi').className='ic-fill '+(r>70?'ovb':r<30?'ovs':'ok');
+    document.getElementById('iv-macd').textContent=macdVal>0?'📈 Bullish':'📉 Bearish';
+    document.getElementById('iv-macd').className='ic-val '+(macdVal>0?'green':'red');
+    document.getElementById('iv-trend').textContent=trendUp?'📈 ALTA':trendDn?'📉 BAIXA':'➡️ LATERAL';
+    document.getElementById('iv-trend').className='ic-val '+(trendUp?'green':trendDn?'red':'');
+    document.getElementById('iv-ai').textContent=ai.dir!=='neutral'?ai.dir+' '+ai.conf+'%':'Analisando...';
+    document.getElementById('iv-ai').className='ic-val '+(ai.dir==='CALL'?'green':ai.dir==='PUT'?'red':'');
+    let callS=0,putS=0,callC=[],putC=[];
+    if(r<30){callS+=3;callC.push('RSI em zona de sobrevenda');}else if(r<40){callS+=1;callC.push('RSI favorável para compra');}
+    if(r>70){putS+=3;putC.push('RSI em zona de sobrecompra');}else if(r>60){putS+=1;putC.push('RSI favorável para venda');}
+    if(bb<0.2){callS+=2;callC.push('Preço na banda inferior');}
+    if(bb>0.8){putS+=2;putC.push('Preço na banda superior');}
+    if(trendUp){callS+=2;callC.push('Tendência de alta');}
+    if(trendDn){putS+=2;putC.push('Tendência de baixa');}
+    if(macdVal>0){callS+=1;callC.push('MACD positivo');}
+    if(macdVal<0){putS+=1;putC.push('MACD negativo');}
+    if(ai.dir==='CALL'){callS+=3;callC.push('IA prevê alta com '+ai.conf+'%');}
+    if(ai.dir==='PUT'){putS+=3;putC.push('IA prevê baixa com '+ai.conf+'%');}
+    const best=callS>putS?'CALL':'PUT',score=Math.max(callS,putS),reasons=callS>putS?callC:putC;
+    if(score>=5)fireSignal(best,score,reasons);
+}
+
+function fireSignal(dir,score,reasons){
+    const now=new Date(),pct=Math.min(Math.round((score/18)*100),99);
+    const card=document.getElementById('sig-card');
+    card.className='sig-card '+dir.toLowerCase()+(score>=8?' ultra':'');
+    document.getElementById('sig-wait').classList.add('hide');
+    document.getElementById('sig-active').classList.remove('hide');
+    document.getElementById('sig-level').textContent=score>=10?'⭐ ULTRA':score>=8?'⭐ FORTE':'FORTE';
+    document.getElementById('sig-level').className='sig-level '+(score>=8?'gold':'forte');
+    document.getElementById('sd-icon').textContent=dir==='CALL'?'📈':'📉';
+    document.getElementById('sd-txt').textContent=dir;
+    document.getElementById('sig-dir').className='sig-dir '+dir.toLowerCase();
+    document.getElementById('si-asset').textContent=activePair;
+    document.getElementById('si-time').textContent=now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('ac-pct').textContent=pct+'%';
+    document.getElementById('ac-fill').style.width=pct+'%';
+    document.getElementById('ac-fill').className='ac-fill '+(pct>=80?'ultra':pct>=60?'forte':pct>=40?'medio':'fraco');
+    const list=document.getElementById('sr-list');list.innerHTML='';
+    reasons.forEach(r=>{const d=document.createElement('div');d.className='sr-item';d.innerHTML='<i class="fas fa-check-circle"></i><span>'+r+'</span>';list.appendChild(d);});
+    startCD(300);
+    if(!muted)try{document.getElementById('snd').currentTime=0;document.getElementById('snd').play().catch(()=>{});}catch(e){}
+    history.unshift({pair:activePair,dir,pct,time:now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})});
+    if(history.length>20)history.pop();
+    updateHist();
+}
+
+function startCD(s){if(cdTimer)clearInterval(cdTimer);let r=s;const el=document.getElementById('scd-val');cdTimer=setInterval(()=>{r--;el.textContent=Math.floor(r/60)+':'+(r%60<10?'0':'')+r%60;if(r<=0){clearInterval(cdTimer);document.getElementById('sig-card').className='sig-card idle';document.getElementById('sig-wait').classList.remove('hide');document.getElementById('sig-active').classList.add('hide');document.getElementById('sig-level').textContent='AGUARDANDO';document.getElementById('sig-level').className='sig-level';}},1000);}
+
+function updateHist(){
+    const c=document.getElementById('hist-list');
+    if(!history.length){c.innerHTML='<div class="hist-empty"><p>Os sinais aparecerão aqui</p></div>';return;}
+    c.innerHTML='';
+    history.forEach(h=>{const d=document.createElement('div');d.className='hi';
+    d.innerHTML=`<div class="hi-left"><span class="hi-icon">${h.dir==='CALL'?'📈':'📉'}</span><span class="hi-pair">${h.pair}</span><span class="hi-dir-txt ${h.dir.toLowerCase()}">${h.dir}</span></div><div class="hi-right"><span class="hi-conf">🧠 ${h.pct}%</span><span class="hi-time">${h.time}</span></div>`;
+    c.appendChild(d);});
+}
+
+function drawChart(){
+    const cv=document.getElementById('chart');if(!cv)return;
+    const ctx=cv.getContext('2d'),W=cv.parentElement.clientWidth-20,H=180;
+    cv.width=W;cv.height=H;ctx.clearRect(0,0,W,H);
+    const sim=sims[activePair];if(!sim||sim.prices.length<2)return;
+    const prices=sim.prices.slice(-80),mn=Math.min(...prices),mx=Math.max(...prices),rng=mx-mn||0.001;
+    ctx.strokeStyle='#152030';ctx.lineWidth=0.5;
+    for(let i=0;i<5;i++){const y=H*i/4;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    const up=prices[prices.length-1]>prices[0];
+    ctx.beginPath();ctx.strokeStyle=up?'#00e676':'#ff1744';ctx.lineWidth=2.5;
+    prices.forEach((p,i)=>{const x=(i/(prices.length-1))*W,y=H-(((p-mn)/rng)*H*0.8+H*0.1);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.stroke();
+    ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();
+    const g=ctx.createLinearGradient(0,0,0,H),cl=up?'0,230,118':'255,23,68';
+    g.addColorStop(0,'rgba('+cl+',0.12)');g.addColorStop(1,'rgba('+cl+',0)');ctx.fillStyle=g;ctx.fill();
+    const d=PAIRS[activePair].pip<0.001?5:2;
+    ctx.fillStyle='#fff';ctx.font='bold 13px JetBrains Mono';
+    ctx.fillText(activePair+'  '+prices[prices.length-1].toFixed(d),8,18);
+}
+
+window.togMute=function(){muted=!muted;document.getElementById('btn-snd').innerHTML=muted?'<i class="fas fa-volume-mute"></i>':'<i class="fas fa-volume-up"></i>';};
+setTimeout(()=>document.getElementById('splash').classList.remove('active'),3000);
+</script>
+</body>
+</html>
