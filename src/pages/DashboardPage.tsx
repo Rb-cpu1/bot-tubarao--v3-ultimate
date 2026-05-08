@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthActions } from '../hooks/useAuth'
+import { useSignals } from '../hooks/useSignals'
+import { useMarketData } from '../hooks/useMarketData'
 import { useToast } from '../hooks/useToast'
 import LoadingSpinner from '../components/LoadingSpinner'
+import Chart from '../components/Chart'
+import SignalCard from '../components/SignalCard'
 
 interface Asset {
   pair: string
@@ -10,22 +14,13 @@ interface Asset {
   price: number
 }
 
-interface Signal {
-  pair: string
-  direction: 'CALL' | 'PUT'
-  confidence: number
-  time: string
-  reasons: string[]
-}
-
 const DashboardPage: React.FC = () => {
   const [activeAsset, setActiveAsset] = useState('EUR/USD')
-  const [signal, setSignal] = useState<Signal | null>(null)
-  const [countdown, setCountdown] = useState(0)
   const [muted, setMuted] = useState(false)
-  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const { userName, userPlan, logout } = useAuthActions()
+  const { signals, loading: signalsLoading, generateNewSignal } = useSignals()
+  const { data: marketData, loading: marketLoading } = useMarketData(activeAsset)
   const { showError, showSuccess } = useToast()
 
   const assets: Asset[] = [
@@ -37,57 +32,6 @@ const DashboardPage: React.FC = () => {
     { pair: 'BTC/USD', flag: '₿💲', price: 67520 }
   ]
 
-  const generateSignal = () => {
-    const directions: ('CALL' | 'PUT')[] = ['CALL', 'PUT']
-    const randomDirection = directions[Math.floor(Math.random() * directions.length)]
-    const randomConfidence = Math.floor(Math.random() * 40) + 60
-    const reasons = [
-      'RSI em zona favorável',
-      'Tendência de alta confirmada',
-      'Momentum positivo',
-      'Padrão gráfico identificado',
-      'Confluência de indicadores'
-    ]
-
-    setSignal({
-      pair: activeAsset,
-      direction: randomDirection,
-      confidence: randomConfidence,
-      time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-      reasons: reasons.slice(0, Math.floor(Math.random() * 3) + 2)
-    })
-    setCountdown(300) // 5 minutes
-  }
-
-  useEffect(() => {
-    // Simulate market data updates
-    const interval = setInterval(() => {
-      // Update prices
-      setAssets(prev => prev.map(asset => ({
-        ...asset,
-        price: asset.price + (Math.random() - 0.5) * 0.001
-      })))
-    }, 2000)
-
-    // Countdown timer
-    if (countdown > 0) {
-      const timer = setInterval(() => {
-        setCountdown(prev => prev - 1)
-      }, 1000)
-      return () => clearInterval(timer)
-    } else if (signal) {
-      setSignal(null)
-    }
-
-    return () => clearInterval(interval)
-  }, [countdown, signal])
-
-  const formatCountdown = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins}:${secs.toString().padStart(2, '0')}`
-  }
-
   const handleLogout = async () => {
     try {
       await logout()
@@ -98,14 +42,18 @@ const DashboardPage: React.FC = () => {
     }
   }
 
-  const handleGenerateSignal = () => {
-    setLoading(true)
-    setTimeout(() => {
-      generateSignal()
-      setLoading(false)
+  const handleGenerateSignal = async () => {
+    try {
+      await generateNewSignal(activeAsset)
       showSuccess('Novo sinal gerado!')
-    }, 2000)
+    } catch (error) {
+      showError('Erro ao gerar sinal')
+    }
   }
+
+  const activeSignal = signals.find(signal => 
+    signal.pair === activeAsset && signal.status === 'active'
+  )
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 to-purple-900">
@@ -197,7 +145,7 @@ const DashboardPage: React.FC = () => {
                   <div className="text-lg mb-1">{asset.flag}</div>
                   <div className="text-xs font-bold text-white mb-1">{asset.pair}</div>
                   <div className="text-xs text-yellow-400">
-                    {asset.price.toFixed(asset.pair.includes('BTC') ? 0 : 4)}
+                    {marketData ? marketData.price.toFixed(asset.pair.includes('BTC') ? 0 : 4) : '--'}
                   </div>
                 </div>
               </button>
@@ -205,31 +153,52 @@ const DashboardPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Chart */}
+        <div className="mb-6">
+          <div className="bg-gray-800/50 rounded-xl border border-gray-700 overflow-hidden">
+            <div className="bg-gray-800 px-4 py-3 flex justify-between items-center">
+              <span className="text-sm font-bold text-yellow-400">{activeAsset}</span>
+              <span className="text-xs text-gray-400">M5</span>
+            </div>
+            <div className="p-4">
+              {marketLoading ? (
+                <div className="flex items-center justify-center" style={{ height: 180 }}>
+                  <LoadingSpinner />
+                </div>
+              ) : (
+                <Chart pair={activeAsset} />
+              )}
+            </div>
+          </div>
+        </div>
+
         {/* Signal Card */}
         <div className="mb-6">
-          <div className="bg-gray-800/50 rounded-xl border-2 border-gray-700 overflow-hidden">
-            <div className="bg-gray-800 px-4 py-3 flex justify-between items-center border-b border-gray-700">
-              <div className="flex items-center gap-2">
-                <span className="text-purple-400">📡</span>
-                <span className="text-sm text-gray-400 uppercase tracking-wider">SINAL DA IA</span>
+          {activeSignal ? (
+            <SignalCard signal={activeSignal} />
+          ) : (
+            <div className="bg-gray-800/50 rounded-xl border-2 border-gray-700 overflow-hidden">
+              <div className="bg-gray-800 px-4 py-3 flex justify-between items-center border-b border-gray-700">
+                <div className="flex items-center gap-2">
+                  <span className="text-purple-400">📡</span>
+                  <span className="text-sm text-gray-400 uppercase tracking-wider">SINAL DA IA</span>
+                </div>
+                <span className="text-xs font-bold px-3 py-1 rounded-full bg-gray-700 text-gray-300">
+                  AGUARDANDO
+                </span>
               </div>
-              <span className="text-xs font-bold px-3 py-1 rounded-full bg-gray-700 text-gray-300">
-                AGUARDANDO
-              </span>
-            </div>
-            
-            <div className="p-4">
-              {!signal ? (
+              
+              <div className="p-4">
                 <div className="text-center py-8">
                   <div className="text-4xl mb-4">🦈</div>
                   <p className="text-sm text-gray-400 mb-2">A IA está analisando o mercado...</p>
                   <p className="text-xs text-gray-500">Aguarde o próximo sinal de alta precisão</p>
                   <button
                     onClick={handleGenerateSignal}
-                    disabled={loading}
+                    disabled={signalsLoading}
                     className="mt-4 px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2 mx-auto"
                   >
-                    {loading ? (
+                    {signalsLoading ? (
                       <>
                         <LoadingSpinner size="sm" />
                         Gerando sinal...
@@ -242,85 +211,9 @@ const DashboardPage: React.FC = () => {
                     )}
                   </button>
                 </div>
-              ) : (
-                <div>
-                  <div className={`text-center py-4 rounded-lg mb-4 ${
-                    signal.direction === 'CALL' 
-                      ? 'bg-green-500/10 border border-green-500/20' 
-                      : 'bg-red-500/10 border border-red-500/20'
-                  }`}>
-                    <span className="text-3xl mb-2 block">
-                      {signal.direction === 'CALL' ? '📈' : '📉'}
-                    </span>
-                    <span className={`text-2xl font-bold tracking-wider ${
-                      signal.direction === 'CALL' ? 'text-green-400' : 'text-red-400'
-                    }`}>
-                      {signal.direction}
-                    </span>
-                    <span className="text-xs text-yellow-400 uppercase tracking-wider mt-2 block animate-pulse">
-                      ENTRADA AGORA
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div className="bg-gray-800 rounded-lg p-3 text-center">
-                      <span className="text-xs text-gray-400 uppercase tracking-wider">ATIVO</span>
-                      <span className="text-sm font-bold text-yellow-400">{signal.pair}</span>
-                    </div>
-                    <div className="bg-gray-800 rounded-lg p-3 text-center">
-                      <span className="text-xs text-gray-400 uppercase tracking-wider">TIMEFRAME</span>
-                      <span className="text-sm font-bold text-yellow-400">M5</span>
-                    </div>
-                    <div className="bg-gray-800 rounded-lg p-3 text-center">
-                      <span className="text-xs text-gray-400 uppercase tracking-wider">EXPIRAÇÃO</span>
-                      <span className="text-sm font-bold text-yellow-400">5 minutos</span>
-                    </div>
-                    <div className="bg-gray-800 rounded-lg p-3 text-center">
-                      <span className="text-xs text-gray-400 uppercase tracking-wider">HORA</span>
-                      <span className="text-sm font-bold text-yellow-400">{signal.time}</span>
-                    </div>
-                  </div>
-
-                  <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-lg p-3 mb-4">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-xs text-purple-400">🧠 CONFIANÇA DA IA</span>
-                      <span className="text-lg font-bold text-yellow-400">{signal.confidence}%</span>
-                    </div>
-                    <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full rounded-full transition-all"
-                        style={{ 
-                          width: `${signal.confidence}%`,
-                          background: signal.confidence >= 80 
-                            ? 'linear-gradient(90deg, #ffd700, #ff9100)' 
-                            : signal.confidence >= 60 
-                              ? 'linear-gradient(90deg, #00e676, #00bfa5)' 
-                              : 'linear-gradient(90deg, #ff9100, #ff6d00)'
-                        }}
-                      ></div>
-                    </div>
-                  </div>
-
-                  <div className="bg-gray-800 rounded-lg p-3 mb-4">
-                    <span className="text-xs text-gray-400 uppercase tracking-wider mb-2 block">POR QUE ESTE SINAL?</span>
-                    <div className="space-y-1">
-                      {signal.reasons.map((reason, index) => (
-                        <div key={index} className="flex items-center gap-2 text-xs text-green-400">
-                          <span>✓</span>
-                          <span>{reason}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="bg-gray-800 rounded-lg p-3 text-center">
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Expira em</span>
-                    <span className="text-xl font-bold text-yellow-400">{formatCountdown(countdown)}</span>
-                  </div>
-                </div>
-              )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Technical Analysis */}
@@ -357,9 +250,39 @@ const DashboardPage: React.FC = () => {
             <span>📝</span> ÚLTIMOS SINAIS
           </h2>
           <div className="bg-gray-800/50 rounded-xl border border-gray-700 overflow-hidden">
-            <div className="p-4 text-center text-gray-500 text-sm">
-              Os sinais aparecerão aqui
-            </div>
+            {signals.length > 0 ? (
+              <div className="divide-y divide-gray-700">
+                {signals.slice(0, 5).map((signal) => (
+                  <div key={signal.id} className="p-4 flex justify-between items-center">
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl">
+                        {signal.direction === 'CALL' ? '📈' : '📉'}
+                      </span>
+                      <div>
+                        <div className="font-bold text-white">{signal.pair}</div>
+                        <div className="text-xs text-gray-400">
+                          {new Date(signal.created_at).toLocaleDateString('pt-BR')}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className={`text-sm font-bold ${
+                        signal.direction === 'CALL' ? 'text-green-400' : 'text-red-400'
+                      }`}>
+                        {signal.direction}
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {signal.confidence}% confiança
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-4 text-center text-gray-500 text-sm">
+                Os sinais aparecerão aqui
+              </div>
+            )}
           </div>
         </div>
       </main>
