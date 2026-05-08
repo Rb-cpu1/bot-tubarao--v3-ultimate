@@ -1,3 +1,5 @@
+// This file is now deprecated and replaced by supabase.ts
+// Keeping for reference but all functionality has been moved to supabase.ts
 import { initializeApp } from 'firebase/app'
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
 import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore'

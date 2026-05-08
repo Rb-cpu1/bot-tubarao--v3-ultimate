@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 
 interface Asset {
   pair: string
@@ -21,6 +22,7 @@ const DashboardPage: React.FC = () => {
   const [countdown, setCountdown] = useState(0)
   const [muted, setMuted] = useState(false)
   const navigate = useNavigate()
+  const { profile } = useAuth()
 
   const assets: Asset[] = [
     { pair: 'EUR/USD', flag: '🇪🇺🇺🇸', price: 1.0852 },
@@ -87,6 +89,8 @@ const DashboardPage: React.FC = () => {
     navigate('/')
   }
 
+  const userName = profile?.name || 'Trader'
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 to-purple-900">
       {/* Header */}
@@ -128,7 +132,7 @@ const DashboardPage: React.FC = () => {
           <div className="flex justify-between items-start mb-4">
             <div>
               <h1 className="text-xl font-semibold">
-                Olá, <span className="text-yellow-400">Trader</span> 👋
+                Olá, <span className="text-yellow-400">{userName}</span> 👋
               </h1>
               <p className="text-sm text-gray-400">
                 {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}

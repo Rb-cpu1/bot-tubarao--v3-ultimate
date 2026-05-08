@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { createUser, loginUser } from '../services/firebase'
+import { createUser, loginUser } from '../services/supabase'
 
 const LoginPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login')

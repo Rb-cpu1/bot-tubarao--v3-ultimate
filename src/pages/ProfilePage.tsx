@@ -1,21 +1,32 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate()
+  const { profile } = useAuth()
 
-  const userData = {
+  const userData = profile || {
     name: 'Trader',
     email: 'trader@example.com',
     plan: 'PRO',
-    since: '01/01/2024',
+    created_at: '01/01/2024',
     status: 'Ativo'
   }
 
   const planInfo = {
-    name: 'PRO',
-    description: 'Todos os ativos • Sinais ULTRA • 90 dias',
+    name: userData.plan || 'PRO',
+    description: userData.plan === 'Pro' ? 'Todos os ativos • Sinais ULTRA • 90 dias' :
+                 userData.plan === 'Elite' ? 'Acesso VITALÍCIO • Tudo incluído' :
+                 userData.plan === 'Básico' ? '3 ativos • Sinais IA • 30 dias' :
+                 'Modo demonstração',
     status: 'ATIVO'
+  }
+
+  const formatDateString = (dateString: string) => {
+    if (!dateString) return '01/01/2024'
+    const date = new Date(dateString)
+    return date.toLocaleDateString('pt-BR', { day: 'numeric', month: 'numeric', year: 'numeric' })
   }
 
   return (
@@ -40,13 +51,15 @@ const ProfilePage: React.FC = () => {
           
           <div className="relative z-10">
             <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full flex items-center justify-center shadow-lg">
-              <span className="text-2xl font-bold text-black">T</span>
+              <span className="text-2xl font-bold text-black">
+                {userData.name ? userData.name.charAt(0).toUpperCase() : 'T'}
+              </span>
             </div>
             <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-yellow-400 to-orange-400 text-black text-xs font-bold px-3 py-1 rounded-full">
-              {userData.plan}
+              {userData.plan || 'PRO'}
             </div>
-            <h2 className="text-xl font-bold text-white mb-1">{userData.name}</h2>
-            <p className="text-sm text-gray-400">{userData.email}</p>
+            <h2 className="text-xl font-bold text-white mb-1">{userData.name || 'Trader'}</h2>
+            <p className="text-sm text-gray-400">{userData.email || 'trader@example.com'}</p>
           </div>
         </div>
 
@@ -60,23 +73,23 @@ const ProfilePage: React.FC = () => {
           <div className="divide-y divide-gray-700">
             <div className="p-4 flex justify-between items-center">
               <span className="text-sm text-gray-400">Nome completo</span>
-              <span className="text-sm font-medium text-white">{userData.name}</span>
+              <span className="text-sm font-medium text-white">{userData.name || 'Trader'}</span>
             </div>
             <div className="p-4 flex justify-between items-center">
               <span className="text-sm text-gray-400">Email</span>
-              <span className="text-sm font-medium text-white">{userData.email}</span>
+              <span className="text-sm font-medium text-white">{userData.email || 'trader@example.com'}</span>
             </div>
             <div className="p-4 flex justify-between items-center">
               <span className="text-sm text-gray-400">Plano atual</span>
-              <span className="text-sm font-medium text-yellow-400">{userData.plan}</span>
+              <span className="text-sm font-medium text-yellow-400">{userData.plan || 'PRO'}</span>
             </div>
             <div className="p-4 flex justify-between items-center">
               <span className="text-sm text-gray-400">Membro desde</span>
-              <span className="text-sm font-medium text-white">{userData.since}</span>
+              <span className="text-sm font-medium text-white">{formatDateString(userData.created_at)}</span>
             </div>
             <div className="p-4 flex justify-between items-center">
               <span className="text-sm text-gray-400">Status</span>
-              <span className="text-sm font-medium text-green-400">✅ {userData.status}</span>
+              <span className="text-sm font-medium text-green-400">✅ {userData.status || 'Ativo'}</span>
             </div>
           </div>
         </div>

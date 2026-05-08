@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { auth } from '../services/firebase'
-import { onAuthStateChanged, signOut } from 'firebase/auth'
+import { supabase, getUserProfile } from '../services/supabase'
 
 interface AuthContextType {
   user: any
+  profile: any
   loading: boolean
   logout: () => Promise<void>
 }
@@ -20,23 +20,49 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<any>(null)
+  const [profile, setProfile] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user)
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user || null)
+      if (session?.user) {
+        loadUserProfile(session.user.id)
+      }
       setLoading(false)
     })
 
-    return unsubscribe
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      setUser(session?.user || null)
+      if (session?.user) {
+        await loadUserProfile(session.user.id)
+      } else {
+        setProfile(null)
+      }
+      setLoading(false)
+    })
+
+    return () => subscription.unsubscribe()
   }, [])
 
+  const loadUserProfile = async (userId: string) => {
+    try {
+      const userProfile = await getUserProfile(userId)
+      setProfile(userProfile)
+    } catch (error) {
+      console.error('Error loading user profile:', error)
+    }
+  }
+
   const logout = async () => {
-    await signOut(auth)
+    await supabase.auth.signOut()
   }
 
   const value = {
     user,
+    profile,
     loading,
     logout
   }
