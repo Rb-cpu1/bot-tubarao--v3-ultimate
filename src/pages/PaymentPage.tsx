@@ -1,76 +1,45 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-interface Plan {
-  id: string
-  name: string
-  price: number
-  features: string[]
-  popular?: boolean
-  elite?: boolean
-}
-
 const PaymentPage: React.FC = () => {
-  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null)
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
   const [txId, setTxId] = useState('')
   const [showSuccess, setShowSuccess] = useState(false)
   const navigate = useNavigate()
 
-  const plans: Plan[] = [
+  const plans = [
     {
       id: 'basico',
       name: 'BÁSICO',
       price: 47,
-      features: [
-        'Acesso ao Bot Tubarão',
-        'Sinais com IA',
-        '3 ativos principais',
-        'Validade: 30 dias'
-      ]
+      features: ['Acesso ao Bot Tubarão', 'Sinais com IA', '3 ativos principais', 'Validade: 30 dias']
     },
     {
       id: 'pro',
       name: 'PRO',
       price: 97,
-      features: [
-        'Tudo do Básico',
-        'Todos os ativos',
-        'Sinais ULTRA precisos',
-        'Validade: 90 dias'
-      ],
+      features: ['Tudo do Básico', 'Todos os ativos', 'Sinais ULTRA precisos', 'Validade: 90 dias'],
       popular: true
     },
     {
       id: 'elite',
       name: 'ELITE',
       price: 197,
-      features: [
-        'Tudo do Pro',
-        'Acesso VITALÍCIO',
-        'Atualizações grátis',
-        'Suporte prioritário'
-      ],
+      features: ['Tudo do Pro', 'Acesso VITALÍCIO', 'Atualizações grátis', 'Suporte prioritário'],
       elite: true
     }
   ]
 
-  const handleSelectPlan = (plan: Plan) => {
-    setSelectedPlan(plan)
+  const handleSelectPlan = (planId: string) => {
+    setSelectedPlan(planId)
   }
 
-  const handleConfirmPayment = async () => {
+  const handleConfirmPayment = () => {
     if (!txId.trim()) {
       alert('Cole o TxID da transação')
       return
     }
-
-    try {
-      // Here you would typically send the payment data to your backend
-      console.log('Payment confirmed:', { plan: selectedPlan, txId })
-      setShowSuccess(true)
-    } catch (error) {
-      alert('Erro ao confirmar pagamento')
-    }
+    setShowSuccess(true)
   }
 
   const copyAddress = () => {
@@ -141,9 +110,9 @@ const PaymentPage: React.FC = () => {
             {plans.map((plan) => (
               <div
                 key={plan.id}
-                onClick={() => handleSelectPlan(plan)}
+                onClick={() => handleSelectPlan(plan.id)}
                 className={`p-6 rounded-xl border-2 cursor-pointer transition-all ${
-                  selectedPlan?.id === plan.id
+                  selectedPlan === plan.id
                     ? 'border-yellow-400 bg-yellow-400/10 shadow-lg'
                     : 'border-gray-700 hover:border-gray-600'
                 } ${plan.popular ? 'border-yellow-400' : ''} ${plan.elite ? 'border-purple-400' : ''}`}
@@ -187,8 +156,8 @@ const PaymentPage: React.FC = () => {
             
             <div className="bg-gray-800 rounded-lg p-4 mb-6">
               <div className="flex justify-between items-center">
-                <span className="font-semibold">{selectedPlan.name}</span>
-                <span className="text-xl font-bold text-yellow-400">${selectedPlan.price} USDT</span>
+                <span className="font-semibold">{plans.find(p => p.id === selectedPlan)?.name}</span>
+                <span className="text-xl font-bold text-yellow-400">${plans.find(p => p.id === selectedPlan)?.price} USDT</span>
               </div>
             </div>
 

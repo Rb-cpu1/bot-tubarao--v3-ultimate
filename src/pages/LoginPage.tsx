@@ -1,16 +1,11 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { createUser, loginUser } from '../services/supabase'
-import { useToast } from '../hooks/useToast'
-import LoadingSpinner from '../components/LoadingSpinner'
 
 const LoginPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
   const navigate = useNavigate()
-  const { showError, showSuccess } = useToast()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -22,13 +17,12 @@ const LoginPage: React.FC = () => {
     const password = (form.elements.namedItem('password') as HTMLInputElement).value
 
     try {
-      await loginUser(email, password)
-      showSuccess('Login realizado com sucesso!')
+      // Simulate login
+      console.log('Login attempt:', email)
+      await new Promise(resolve => setTimeout(resolve, 1000))
       navigate('/dashboard')
-    } catch (err: any) {
-      const errorMessage = err.message || 'Erro ao fazer login'
-      setError(errorMessage)
-      showError(errorMessage)
+    } catch (err) {
+      setError('Erro ao fazer login')
     } finally {
       setLoading(false)
     }
@@ -46,14 +40,13 @@ const LoginPage: React.FC = () => {
     const activationCode = (form.elements.namedItem('activationCode') as HTMLInputElement).value
 
     try {
-      await createUser(email, password, name, activationCode)
-      showSuccess('Conta ativada com sucesso!')
-      setSuccess('Conta ativada! Faça login.')
+      // Simulate registration
+      console.log('Registration attempt:', email)
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      alert('Conta criada com sucesso!')
       setActiveTab('login')
-    } catch (err: any) {
-      const errorMessage = err.message || 'Erro ao criar conta'
-      setError(errorMessage)
-      showError(errorMessage)
+    } catch (err) {
+      setError('Erro ao criar conta')
     } finally {
       setLoading(false)
     }
@@ -116,19 +109,9 @@ const LoginPage: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50"
             >
-              {loading ? (
-                <>
-                  <LoadingSpinner size="sm" />
-                  Entrando...
-                </>
-              ) : (
-                <>
-                  <span>🔐</span>
-                  Acessar Sistema
-                </>
-              )}
+              {loading ? 'Entrando...' : 'Acessar Sistema'}
             </button>
             <p className="text-center text-gray-400">
               Não tem conta?{' '}
@@ -182,19 +165,9 @@ const LoginPage: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50"
             >
-              {loading ? (
-                <>
-                  <LoadingSpinner size="sm" />
-                  Ativando...
-                </>
-              ) : (
-                <>
-                  <span>🚀</span>
-                  Ativar Agora
-                </>
-              )}
+              {loading ? 'Ativando...' : 'Ativar Agora'}
             </button>
           </form>
         )}
@@ -202,12 +175,6 @@ const LoginPage: React.FC = () => {
         {error && (
           <div className="mt-4 p-3 bg-red-500/20 border border-red-500 rounded-lg text-red-300 text-center">
             {error}
-          </div>
-        )}
-
-        {success && (
-          <div className="mt-4 p-3 bg-green-500/20 border border-green-500 rounded-lg text-green-300 text-center">
-            {success}
           </div>
         )}
       </div>
