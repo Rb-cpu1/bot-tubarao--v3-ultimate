@@ -27,11 +27,7 @@
 
 <!-- LOGIN -->
 <div id="scr-login" class="scr">
-    <div class="lg-fx">
-        <div class="lp"></div>
-        <div class="lp"></div>
-        <div class="lp"></div>
-    </div>
+    <div class="lg-fx"><div class="lp"></div><div class="lp"></div><div class="lp"></div></div>
     <div class="lg-wrap">
         <div class="lg-logo">
             <div class="lg-icon">🦈</div>
@@ -654,7 +650,7 @@ function drawChart(){
     ctx.fillText(activePair+'  '+prices[prices.length-1].toFixed(d),8,18);
 }
 
-window.togMute=function(){muted=!muted;document.getElementById('btn-snd').innerHTML=muted?'<i class="fas fa-volume-mute"></i>':'<i class="fas fa-volume-up</i>';}
+window.togMute=function(){muted=!muted;document.getElementById('btn-snd').innerHTML=muted?'<i class="fas fa-volume-mute"></i>':'<i class="fas fa-volume-up"></i>';};
 setTimeout(()=>document.getElementById('splash').classList.remove('active'),3000);
 </script>
 </body>
