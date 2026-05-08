@@ -1,53 +1,33 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthActions } from '../hooks/useAuth'
-import { useAIEngine } from '../hooks/useAIEngine'
+import { useTrading } from '../hooks/useTrading'
 import { useToast } from '../hooks/useToast'
 import LoadingSpinner from '../components/LoadingSpinner'
-import AIIndicatorPanel from '../components/AIIndicatorPanel'
-import AdvancedSignalCard from '../components/AdvancedSignalCard'
-
-interface Asset {
-  pair: string
-  flag: string
-  name: string
-  type: 'forex' | 'crypto' | 'commodity'
-}
+import MarketGrid from '../components/MarketGrid'
+import AdvancedSignalPanel from '../components/AdvancedSignalPanel'
 
 const DashboardPage: React.FC = () => {
-  const [activeAsset, setActiveAsset] = useState('EUR/USD')
+  const [currentSymbol, setCurrentSymbol] = useState('EURUSD')
   const [muted, setMuted] = useState(false)
   const [showStrategies, setShowStrategies] = useState(false)
   const navigate = useNavigate()
   const { userName, userPlan, logout } = useAuthActions()
-  const { currentSignal, marketData, loading, error, isGenerating, generateSignal } = useAIEngine(activeAsset)
+  const { 
+    currentSignal, 
+    marketData, 
+    allSymbols, 
+    loading, 
+    error, 
+    isGenerating, 
+    generateSignal,
+    tradingHistory 
+  } = useTrading(currentSymbol)
   const { showError, showSuccess } = useToast()
 
-  const assets: Asset[] = [
-    // Forex
-    { pair: 'EUR/USD', flag: '🇪🇺🇺🇸', name: 'Euro/Dólar', type: 'forex' },
-    { pair: 'USD/JPY', flag: '🇺🇸🇯🇵', name: 'Dólar/Yen', type: 'forex' },
-    { pair: 'GBP/USD', flag: '🇬🇧🇺🇸', name: 'Libra/Dólar', type: 'forex' },
-    { pair: 'USD/CHF', flag: '🇺🇸🇨🇭', name: 'Dólar/Franco', type: 'forex' },
-    { pair: 'AUD/USD', flag: '🇦🇺🇺🇸', name: 'Dólar Australiano', type: 'forex' },
-    { pair: 'USD/CAD', flag: '🇺🇸🇨🇦', name: 'Dólar Canadense', type: 'forex' },
-    { pair: 'NZD/USD', flag: '🇳🇿🇺🇸', name: 'Dólar Neozelandês', type: 'forex' },
-    { pair: 'EUR/GBP', flag: '🇪🇺🇬🇧', name: 'Euro/Libra', type: 'forex' },
-    
-    // Cryptocurrencies
-    { pair: 'BTC/USD', flag: '₿💎', name: 'Bitcoin', type: 'crypto' },
-    { pair: 'ETH/USD', flag: '🔷💎', name: 'Ethereum', type: 'crypto' },
-    { pair: 'BNB/USD', flag: '🟡💎', name: 'Binance Coin', type: 'crypto' },
-    { pair: 'SOL/USD', flag: '🌟💎', name: 'Solana', type: 'crypto' },
-    { pair: 'XRP/USD', flag: '🌊💎', name: 'Ripple', type: 'crypto' },
-    { pair: 'ADA/USD', flag: '🔷💎', name: 'Cardano', type: 'crypto' },
-    
-    // Commodities
-    { pair: 'XAU/USD', flag: '🏅💰', name: 'Ouro', type: 'commodity' },
-    { pair: 'XAG/USD', flag: '🥈💰', name: 'Prata', type: 'commodity' },
-    { pair: 'WTI/USD', flag: '🛢️💰', name: 'Petróleo WTI', type: 'commodity' },
-    { pair: 'NG/USD', flag: '🔥💰', name: 'Gás Natural', type: 'commodity' }
-  ]
+  const handleSymbolSelect = (symbol: string) => {
+    setCurrentSymbol(symbol)
+  }
 
   const handleLogout = async () => {
     try {
@@ -68,14 +48,11 @@ const DashboardPage: React.FC = () => {
     }
   }
 
-  const getAssetTypeColor = (type: string) => {
-    switch (type) {
-      case 'forex': return 'text-green-400'
-      case 'crypto': return 'text-purple-400'
-      case 'commodity': return 'text-yellow-400'
-      default: return 'text-gray-400'
-    }
+  const getSymbolInfo = (symbol: string) => {
+    return allSymbols.find(s => s.symbol === symbol)
   }
+
+  const symbolInfo = getSymbolInfo(currentSymbol)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900">
@@ -156,83 +133,24 @@ const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        {/* AI Status */}
-        <div className="mb-8 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-indigo-500/10 border border-purple-500/20 rounded-xl p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="text-3xl text-purple-400">🧠</div>
-              <div>
-                <div className="text-sm text-purple-400 uppercase tracking-wider mb-1">
-                  MOTOR DE INTELIGÊNCIA ARTIFICIAL V4
-                </div>
-                <p className="text-gray-300">
-                  3 estratégias integradas • Análise em tempo real • Sinais de alta precisão
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></span>
-              <span className="text-sm text-green-400">IA ATIVA</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Asset Selector */}
+        {/* Market Selector */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-sm text-gray-400 flex items-center gap-2">
               <span>🌐</span> SELECIONE O MERCADO
             </h2>
-            <button
-              onClick={() => setShowStrategies(!showStrategies)}
-              className="text-xs text-purple-400 hover:text-purple-300 transition-colors"
-            >
-              {showStrategies ? 'Ocultar estratégias' : 'Ver estratégias'}
-            </button>
+            <div className="text-sm">
+              <span className="text-gray-400">Ativo:</span>
+              <span className="text-yellow-400 font-bold ml-2">
+                {symbolInfo?.name || currentSymbol}
+              </span>
+            </div>
           </div>
           
-          {showStrategies && (
-            <div className="mb-4 bg-gray-800/50 rounded-lg p-4 border border-gray-700">
-              <h3 className="text-sm font-semibold text-gray-300 mb-3">Estratégias Ativas:</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div className="bg-gray-800 rounded-lg p-3 border border-green-500/20">
-                  <div className="text-green-400 font-semibold mb-1">🎯 Cazador Leve</div>
-                  <div className="text-xs text-gray-400">Timeframe M5 • Sinais rápidos</div>
-                </div>
-                <div className="bg-gray-800 rounded-lg p-3 border border-purple-500/20">
-                  <div className="text-purple-400 font-semibold mb-1">⚡ Hiper Alpha</div>
-                  <div className="text-xs text-gray-400">Timeframe M15 • Alta precisão</div>
-                </div>
-                <div className="bg-gray-800 rounded-lg p-3 border border-orange-500/20">
-                  <div className="text-orange-400 font-semibold mb-1">🦈 Tubarão V3</div>
-                  <div className="text-xs text-gray-400">Timeframe M30 • Multi-indicador</div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            {assets.map((asset) => (
-              <button
-                key={asset.pair}
-                onClick={() => setActiveAsset(asset.pair)}
-                className={`p-4 rounded-xl border transition-all duration-300 ${
-                  activeAsset === asset.pair
-                    ? 'border-yellow-400 bg-gradient-to-br from-yellow-400/10 to-orange-400/10 shadow-lg transform scale-105'
-                    : 'border-gray-700 hover:border-gray-600 hover:bg-gray-800/50'
-                }`}
-              >
-                <div className="text-center">
-                  <div className="text-2xl mb-2">{asset.flag}</div>
-                  <div className="text-xs font-bold text-white mb-1">{asset.pair}</div>
-                  <div className="text-xs text-gray-400 mb-2">{asset.name}</div>
-                  <span className={`text-xs font-semibold ${getAssetTypeColor(asset.type)}`}>
-                    {asset.type.toUpperCase()}
-                  </span>
-                </div>
-              </button>
-            ))}
-          </div>
+          <MarketGrid 
+            onSymbolSelect={handleSymbolSelect}
+            currentSymbol={currentSymbol}
+          />
         </div>
 
         {/* Signal Section */}
@@ -261,7 +179,7 @@ const DashboardPage: React.FC = () => {
           </div>
 
           {currentSignal ? (
-            <AdvancedSignalCard signal={currentSignal} />
+            <AdvancedSignalPanel signal={currentSignal} />
           ) : (
             <div className="bg-gray-800/50 rounded-xl border-2 border-gray-700 overflow-hidden">
               <div className="bg-gray-800 px-4 py-3 flex justify-between items-center border-b border-gray-700">
@@ -290,43 +208,47 @@ const DashboardPage: React.FC = () => {
           )}
         </div>
 
-        {/* AI Indicators Panel */}
-        <div className="mb-8">
-          <AIIndicatorPanel marketData={marketData} />
-        </div>
-
-        {/* Market Overview */}
-        <div className="mb-8">
-          <h2 className="text-sm text-gray-400 mb-4 flex items-center gap-2">
-            <span>📊</span> VISÃO GERAL DO MERCADO
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { name: 'Volatilidade', value: 'Moderada', trend: 'stable', color: 'text-yellow-400' },
-              { name: 'Liquidez', value: 'Alta', trend: 'high', color: 'text-green-400' },
-              { name: 'Sentimento', value: 'Bullish', trend: 'positive', color: 'text-green-400' },
-              { name: 'Volume', value: '1.2M', trend: 'high', color: 'text-blue-400' }
-            ].map((item, index) => (
-              <div key={index} className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
-                <div className="text-xs text-gray-400 mb-2">{item.name}</div>
-                <div className={`text-lg font-bold ${item.color}`}>{item.value}</div>
-                <div className="text-xs text-gray-500 mt-1">{item.trend}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Trading History */}
         <div>
           <h2 className="text-sm text-gray-400 mb-4 flex items-center gap-2">
             <span>📝</span> HISTÓRICO DE SINAIS
           </h2>
           <div className="bg-gray-800/50 rounded-xl border border-gray-700 overflow-hidden">
-            <div className="p-6 text-center text-gray-500">
-              <div className="text-4xl mb-4">📊</div>
-              <p>Os sinais aparecerão aqui</p>
-              <p className="text-sm text-gray-400 mt-2">Histórico completo de operações</p>
-            </div>
+            {tradingHistory.length > 0 ? (
+              <div className="divide-y divide-gray-700">
+                {tradingHistory.map((signal, index) => (
+                  <div key={signal.id} className="p-4 flex justify-between items-center">
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl">
+                        {signal.direction === 'CALL' ? '📈' : '📉'}
+                      </span>
+                      <div>
+                        <div className="font-bold text-white">{signal.symbol}</div>
+                        <div className="text-xs text-gray-400">
+                          {new Date(signal.createdAt).toLocaleDateString('pt-BR')}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className={`text-sm font-bold ${
+                        signal.direction === 'CALL' ? 'text-green-400' : 'text-red-400'
+                      }`}>
+                        {signal.direction}
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {signal.confidence}% confiança
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-6 text-center text-gray-500">
+                <div className="text-4xl mb-4">📊</div>
+                <p>Os sinais aparecerão aqui</p>
+                <p className="text-sm text-gray-400 mt-2">Histórico completo de operações</p>
+              </div>
+            )}
           </div>
         </div>
       </main>
