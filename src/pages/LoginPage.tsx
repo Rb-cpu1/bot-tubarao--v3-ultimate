@@ -5,7 +5,14 @@ const LoginPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const navigate = useNavigate()
+
+  // Simulação de usuários
+  const users = [
+    { email: 'demo@bottubarao.com', password: 'demo123', name: 'Demo User' },
+    { email: 'trader@bottubarao.com', password: 'trader123', name: 'Pro Trader' }
+  ]
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -17,10 +24,23 @@ const LoginPage: React.FC = () => {
     const password = (form.elements.namedItem('password') as HTMLInputElement).value
 
     try {
-      // Simulate login
-      console.log('Login attempt:', email)
+      // Simular login
       await new Promise(resolve => setTimeout(resolve, 1000))
-      navigate('/dashboard')
+      
+      // Verificar se o usuário existe
+      const user = users.find(u => u.email === email && u.password === password)
+      
+      if (user) {
+        // Armazenar usuário no localStorage
+        localStorage.setItem('currentUser', JSON.stringify({
+          email: user.email,
+          name: user.name,
+          plan: 'Pro' // Simulação de plano
+        }))
+        navigate('/dashboard')
+      } else {
+        setError('Email ou senha incorretos')
+      }
     } catch (err) {
       setError('Erro ao fazer login')
     } finally {
@@ -40,11 +60,26 @@ const LoginPage: React.FC = () => {
     const activationCode = (form.elements.namedItem('activationCode') as HTMLInputElement).value
 
     try {
-      // Simulate registration
-      console.log('Registration attempt:', email)
+      // Simular registro
       await new Promise(resolve => setTimeout(resolve, 1000))
-      alert('Conta criada com sucesso!')
-      setActiveTab('login')
+      
+      // Validar código de ativação
+      const validCodes = ['TUBARAO2025', 'SHARKV3PRO', 'TUBARAOELITE', 'SHARKULTRA', 'DEMO123', 'BASICO2025']
+      
+      if (validCodes.includes(activationCode.toUpperCase())) {
+        // Armazenar usuário no localStorage
+        localStorage.setItem('currentUser', JSON.stringify({
+          email,
+          name,
+          plan: activationCode.toUpperCase() === 'DEMO123' ? 'Demo' : 'Pro'
+        }))
+        setSuccess('Conta ativada com sucesso!')
+        setTimeout(() => {
+          navigate('/dashboard')
+        }, 1500)
+      } else {
+        setError('Código de ativação inválido')
+      }
     } catch (err) {
       setError('Erro ao criar conta')
     } finally {
@@ -106,6 +141,9 @@ const LoginPage: React.FC = () => {
                 required
               />
             </div>
+            <div className="text-xs text-gray-400 mb-2">
+              Demo: demo@bottubarao.com / demo123
+            </div>
             <button
               type="submit"
               disabled={loading}
@@ -162,6 +200,9 @@ const LoginPage: React.FC = () => {
                 required
               />
             </div>
+            <div className="text-xs text-gray-400 mb-2">
+              Códigos válidos: TUBARAO2025, SHARKV3PRO, TUBARAOELITE, SHARKULTRA, DEMO123, BASICO2025
+            </div>
             <button
               type="submit"
               disabled={loading}
@@ -175,6 +216,12 @@ const LoginPage: React.FC = () => {
         {error && (
           <div className="mt-4 p-3 bg-red-500/20 border border-red-500 rounded-lg text-red-300 text-center">
             {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="mt-4 p-3 bg-green-500/20 border border-green-500 rounded-lg text-green-300 text-center">
+            {success}
           </div>
         )}
       </div>
