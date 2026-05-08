@@ -63,130 +63,80 @@ const LoginPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 to-purple-900">
-      <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="text-6xl mb-4">🦈</div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            BOT TUBARÃO
-          </h1>
-          <p className="text-gray-300 mt-2">V3 ULTIMATE - Sistema de IA Trading</p>
-        </div>
-
-        <div className="flex mb-6 bg-gray-800 rounded-lg p-1">
-          <button
-            className={`flex-1 py-2 px-4 rounded-md transition-all ${
-              activeTab === 'login' 
-                ? 'bg-blue-600 text-white shadow-lg' 
-                : 'text-gray-400 hover:text-white'
-            }`}
-            onClick={() => setActiveTab('login')}
-          >
-            Entrar
-          </button>
-          <button
-            className={`flex-1 py-2 px-4 rounded-md transition-all ${
-              activeTab === 'register' 
-                ? 'bg-blue-600 text-white shadow-lg' 
-                : 'text-gray-400 hover:text-white'
-            }`}
-            onClick={() => setActiveTab('register')}
-          >
-            Criar Conta
-          </button>
-        </div>
-
-        {activeTab === 'login' ? (
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <input
-                type="email"
-                name="email"
-                placeholder="Seu email"
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
-                required
-              />
-            </div>
-            <div>
-              <input
-                type="password"
-                name="password"
-                placeholder="Sua senha"
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50"
-            >
-              {loading ? 'Entrando...' : 'Acessar Sistema'}
-            </button>
-            <p className="text-center text-gray-400">
-              Não tem conta?{' '}
-              <button 
-                type="button" 
-                onClick={() => navigate('/payment')}
-                className="text-blue-400 hover:text-blue-300"
-              >
-                Adquira seu plano
-              </button>
-            </p>
-          </form>
-        ) : (
-          <form onSubmit={handleRegister} className="space-y-4">
-            <div>
-              <input
-                type="text"
-                name="name"
-                placeholder="Seu nome"
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
-                required
-              />
-            </div>
-            <div>
-              <input
-                type="email"
-                name="email"
-                placeholder="Seu email"
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
-                required
-              />
-            </div>
-            <div>
-              <input
-                type="password"
-                name="password"
-                placeholder="Criar senha (mín. 6)"
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
-                required
-              />
-            </div>
-            <div>
-              <input
-                type="text"
-                name="activationCode"
-                placeholder="Código de ativação"
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50"
-            >
-              {loading ? 'Ativando...' : 'Ativar Agora'}
-            </button>
-          </form>
-        )}
-
-        {error && (
-          <div className="mt-4 p-3 bg-red-500/20 border border-red-500 rounded-lg text-red-300 text-center">
-            {error}
+    <div id="scr-login" className="scr active">
+      <div className="lg-fx">
+        <div className="lp"></div>
+        <div className="lp"></div>
+        <div className="lp"></div>
+      </div>
+      <div className="lg-wrap">
+        <div className="lg-logo">
+          <div className="lg-icon">🦈</div>
+          <h1 className="lg-title">BOT TUBARÃO</h1>
+          <div className="lg-badge">V3 ULTIMATE</div>
+          <p className="lg-sub">O sistema de IA que transforma o mercado financeiro em oportunidade</p>
+          <div className="lg-proof">
+            <div className="proof-i"><i className="fas fa-brain"></i><span>IA Avançada</span></div>
+            <div className="proof-i"><i className="fas fa-chart-line"></i><span>Sinais Precisos</span></div>
+            <div className="proof-i"><i className="fas fa-shield-alt"></i><span>100% Seguro</span></div>
           </div>
-        )}
+        </div>
+        <div className="lg-box">
+          <div className="lg-tabs">
+            <button className={`lgt ${activeTab === 'login' ? 'active' : ''}`} onClick={() => setActiveTab('login')}>
+              ENTRAR
+            </button>
+            <button className={`lgt ${activeTab === 'register' ? 'active' : ''}`} onClick={() => setActiveTab('register')}>
+              CRIAR CONTA
+            </button>
+          </div>
+          <div id="tab-login" className={`tabc ${activeTab === 'login' ? 'active' : ''}`}>
+            <div className="inp">
+              <i className="fas fa-envelope"></i>
+              <input type="email" id="l-email" placeholder="Seu email" />
+            </div>
+            <div className="inp">
+              <i className="fas fa-lock"></i>
+              <input type="password" id="l-pass" placeholder="Sua senha" />
+            </div>
+            <button className="btn-go" onClick={handleLogin}>
+              <i className="fas fa-sign-in-alt"></i> ACESSAR SISTEMA
+            </button>
+            <p className="lg-link">
+              Não tem conta? <a href="#" onClick={() => navigate('/payment')}>Adquira seu plano</a>
+            </p>
+          </div>
+          <div id="tab-register" className={`tabc ${activeTab === 'register' ? 'active' : ''}`}>
+            <div className="inp">
+              <i className="fas fa-user"></i>
+              <input type="text" id="r-name" placeholder="Seu nome" />
+            </div>
+            <div className="inp">
+              <i className="fas fa-envelope"></i>
+              <input type="email" id="r-email" placeholder="Seu email" />
+            </div>
+            <div className="inp">
+              <i className="fas fa-lock"></i>
+              <input type="password" id="r-pass" placeholder="Criar senha (mín. 6)" />
+            </div>
+            <div className="inp">
+              <i className="fas fa-key"></i>
+              <input type="text" id="r-key" placeholder="Código de ativação" />
+            </div>
+            <button className="btn-go" onClick={handleRegister}>
+              <i className="fas fa-rocket"></i> ATIVAR AGORA
+            </button>
+          </div>
+          <div id="auth-err" className={`amsg err ${error ? '' : 'hide'}`}>{error}</div>
+          <div id="auth-ok" className="amsg ok hide"></div>
+        </div>
+        <div className="lg-footer">
+          <div className="lg-trust">
+            <span>🔒 Criptografado</span>
+            <span>⚡ Tempo real</span>
+            <span>🧠 IA Ativa</span>
+          </div>
+        </div>
       </div>
     </div>
   )

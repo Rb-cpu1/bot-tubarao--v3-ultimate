@@ -78,376 +78,275 @@ const DashboardPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900">
-      {/* Header */}
-      <header className="bg-gray-800/90 backdrop-blur-md border-b border-gray-700 p-4">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <span className="text-3xl">🦈</span>
-            <div>
-              <span className="text-xl font-bold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
-                BOT TUBARÃO V4
-              </span>
-              <span className="text-xs text-purple-400 ml-2">MULTI-STRATEGY AI</span>
-            </div>
+    <div id="scr-app" className="scr active">
+      <header className="hdr">
+        <div className="hdr-l">
+          <span className="hdr-s">🦈</span>
+          <div>
+            <span className="hdr-n">BOT TUBARÃO</span>
+            <span className="hdr-v">V3 • IA</span>
           </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => navigate('/profile')}
-              className="p-2 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
-            >
-              👤
-            </button>
-            <button
-              onClick={handleLogout}
-              className="p-2 bg-red-600/20 text-red-400 rounded-lg hover:bg-red-600/40 transition-colors"
-            >
-              🔌
-            </button>
-          </div>
+        </div>
+        <div className="hdr-r">
+          <button className="hdr-b" onClick={() => navigate('/profile')}>
+            <i className="fas fa-user-circle"></i>
+          </button>
+          <button className="hdr-b" id="btn-snd" onClick={() => console.log('Toggle sound')}>
+            <i className="fas fa-volume-up"></i>
+          </button>
+          <button className="hdr-b hdr-out" onClick={handleLogout}>
+            <i className="fas fa-power-off"></i>
+          </button>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto p-4">
-        {/* Hero Section */}
-        <div className="mb-8">
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <h1 className="text-2xl font-bold mb-2">
-                Olá, <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
-                  Trader
-                </span> 👋
-              </h1>
-              <p className="text-gray-400">
-                {new Date().toLocaleDateString('pt-BR', { 
-                  weekday: 'long', 
-                  day: 'numeric', 
-                  month: 'long',
-                  year: 'numeric'
-                })}
-              </p>
+      <main className="content">
+        {/* PAGE: DASHBOARD */}
+        <section id="pg-dashboard" className="pg active">
+          <div className="hero">
+            <div className="hero-top">
+              <div>
+                <span className="hero-hi">Olá, <strong id="hero-name">Trader</strong> 👋</span>
+                <span className="hero-date" id="hero-date">--</span>
+              </div>
+              <div className="hero-status">
+                <span className="dot-live"></span>
+                <span id="hero-mkt">MERCADO ABERTO</span>
+              </div>
             </div>
-            <div className="flex items-center gap-3 bg-gradient-to-r from-green-500/20 to-emerald-500/20 px-4 py-2 rounded-full border border-green-500/30">
-              <span className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></span>
-              <span className="text-sm text-green-400 font-semibold">MERCADO ATIVO</span>
+            <div className="hero-msg">
+              <div className="hero-msg-icon">💰</div>
+              <p className="hero-msg-txt">Seu próximo lucro está a um sinal de distância. A IA está trabalhando para você.</p>
             </div>
           </div>
-          
-          <div className="bg-gradient-to-r from-yellow-500/10 via-orange-500/10 to-red-500/10 border border-yellow-500/20 rounded-xl p-6 flex items-center gap-4">
-            <div className="text-4xl">🚀</div>
-            <div>
-              <p className="text-gray-300 mb-2">
-                Sistema de IA Multi-Strategy operando em tempo real
-              </p>
-              <div className="flex gap-4 text-sm">
-                <span className="text-green-400">✓ Forex</span>
-                <span className="text-purple-400">✓ Criptomoedas</span>
-                <span className="text-yellow-400">✓ Commodities</span>
-                <span className="text-blue-400">✓ 3 Estratégias IA</span>
+
+          <div className="ai-status">
+            <div className="ai-s-icon"><i className="fas fa-brain"></i></div>
+            <div className="ai-s-info">
+              <span className="ai-s-label">MOTOR DE INTELIGÊNCIA ARTIFICIAL</span>
+              <span className="ai-s-state" id="ai-state">Inicializando...</span>
+            </div>
+            <div className="ai-s-dot" id="ai-dot"></div>
+          </div>
+
+          <div className="asset-selector">
+            <div className="as-title"><i className="fas fa-coins"></i> ESCOLHA O ATIVO</div>
+            <div className="as-grid" id="asset-grid">
+              <button className="as-btn active" data-pair="EUR/USD" onClick={(e) => {
+                setCurrentSymbol('EURUSD')
+                document.querySelectorAll('.as-btn').forEach(btn => btn.classList.remove('active'))
+                e.currentTarget.classList.add('active')
+              }}>
+                <span className="as-flag">🇪🇺🇺🇸</span>
+                <span className="as-name">EUR/USD</span>
+                <span className="as-price" id="price-EUR/USD">--</span>
+              </button>
+              <button className="as-btn" data-pair="USD/JPY" onClick={(e) => {
+                setCurrentSymbol('USDJPY')
+                document.querySelectorAll('.as-btn').forEach(btn => btn.classList.remove('active'))
+                e.currentTarget.classList.add('active')
+              }}>
+                <span className="as-flag">🇺🇸🇯🇵</span>
+                <span className="as-name">USD/JPY</span>
+                <span className="as-price" id="price-USD/JPY">--</span>
+              </button>
+              <button className="as-btn" data-pair="GBP/USD" onClick={(e) => {
+                setCurrentSymbol('GBPUSD')
+                document.querySelectorAll('.as-btn').forEach(btn => btn.classList.remove('active'))
+                e.currentTarget.classList.add('active')
+              }}>
+                <span className="as-flag">🇬🇧🇺🇸</span>
+                <span className="as-name">GBP/USD</span>
+                <span className="as-price" id="price-GBP/USD">--</span>
+              </button>
+              <button className="as-btn" data-pair="EUR/GBP" onClick={(e) => {
+                setCurrentSymbol('EURGBP')
+                document.querySelectorAll('.as-btn').forEach(btn => btn.classList.remove('active'))
+                e.currentTarget.classList.add('active')
+              }}>
+                <span className="as-flag">🇪🇺🇬🇧</span>
+                <span className="as-name">EUR/GBP</span>
+                <span className="as-price" id="price-EUR/GBP">--</span>
+              </button>
+              <button className="as-btn" data-pair="AUD/USD" onClick={(e) => {
+                setCurrentSymbol('AUDUSD')
+                document.querySelectorAll('.as-btn').forEach(btn => btn.classList.remove('active'))
+                e.currentTarget.classList.add('active')
+              }}>
+                <span className="as-flag">🇦🇺🇺🇸</span>
+                <span className="as-name">AUD/USD</span>
+                <span className="as-price" id="price-AUD/USD">--</span>
+              </button>
+              <button className="as-btn" data-pair="BTC/USD" onClick={(e) => {
+                setCurrentSymbol('BTCUSD')
+                document.querySelectorAll('.as-btn').forEach(btn => btn.classList.remove('active'))
+                e.currentTarget.classList.add('active')
+              }}>
+                <span className="as-flag">₿💲</span>
+                <span className="as-name">BTC/USD</span>
+                <span className="as-price" id="price-BTC/USD">--</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="chart-box">
+            <div className="chart-header">
+              <span className="chart-pair" id="chart-pair">EUR/USD</span>
+              <span className="chart-tf">M5</span>
+            </div>
+            <canvas id="chart" height="180"></canvas>
+          </div>
+
+          <div id="sig-card" className="sig-card idle">
+            <div className="sig-header">
+              <div className="sig-h-left"><i className="fas fa-satellite-dish"></i><span>SINAL DA IA</span></div>
+              <span className="sig-level" id="sig-level">AGUARDANDO</span>
+            </div>
+            <div className="sig-body">
+              <div id="sig-wait" className="sig-wait">
+                <div className="radar">
+                  <div className="rc"></div>
+                  <div className="rc"></div>
+                  <div className="rc"></div>
+                  <div className="rs"></div>
+                  <div className="rm">🦈</div>
+                </div>
+                <p className="sw-t1">A IA está analisando o mercado...</p>
+                <p className="sw-t2">Aguarde o próximo sinal de alta precisão</p>
+              </div>
+              <div id="sig-active" className="sig-active hide">
+                <div className="sig-dir" id="sig-dir">
+                  <span className="sd-icon" id="sd-icon">📈</span>
+                  <span className="sd-txt" id="sd-txt">CALL</span>
+                  <span className="sd-sub">ENTRADA AGORA</span>
+                </div>
+                <div className="sig-info">
+                  <div className="si-item"><span className="si-label">ATIVO</span><span className="si-val" id="si-asset">EUR/USD</span></div>
+                  <div className="si-item"><span className="si-label">TIMEFRAME</span><span className="si-val">M5</span></div>
+                  <div className="si-item"><span className="si-label">EXPIRAÇÃO</span><span className="si-val">5 minutos</span></div>
+                  <div className="si-item"><span className="si-label">HORA</span><span className="si-val" id="si-time">--:--</span></div>
+                </div>
+                <div className="ai-conf">
+                  <div className="ac-top"><span>🧠 CONFIANÇA DA IA</span><span className="ac-pct" id="ac-pct">0%</span></div>
+                  <div className="ac-bar"><div className="ac-fill" id="ac-fill"></div></div>
+                </div>
+                <div className="sig-reasons">
+                  <span className="sr-title">POR QUE ESTE SINAL?</span>
+                  <div className="sr-list" id="sr-list"></div>
+                </div>
+                <div className="sig-cd">
+                  <span className="scd-label">Expira em</span>
+                  <span className="scd-val" id="scd-val">5:00</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Market Selector */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-sm text-gray-400 flex items-center gap-2">
-              <span>🌐</span> SELECIONE O MERCADO
-            </h2>
-            <div className="text-sm">
-              <span className="text-gray-400">Ativo:</span>
-              <span className="text-yellow-400 font-bold ml-2">
-                {symbols.find(s => s.symbol === currentSymbol)?.name || currentSymbol}
-              </span>
+          <div className="indicators">
+            <div className="ind-title"><i className="fas fa-chart-bar"></i> ANÁLISE TÉCNICA</div>
+            <div className="ind-row">
+              <div className="ind-card">
+                <span className="ic-name">RSI</span>
+                <div className="ic-bar"><div className="ic-fill" id="ic-rsi"></div></div>
+                <span className="ic-val" id="iv-rsi">--</span>
+              </div>
+              <div className="ind-card">
+                <span className="ic-name">MACD</span>
+                <span className="ic-val" id="iv-macd">--</span>
+              </div>
+              <div className="ind-card">
+                <span className="ic-name">TENDÊNCIA</span>
+                <span className="ic-val" id="iv-trend">--</span>
+              </div>
+              <div className="ind-card">
+                <span className="ic-name">🧠 IA</span>
+                <span className="ic-val" id="iv-ai">--</span>
+              </div>
             </div>
           </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {symbols.map((symbol) => (
-              <button
-                key={symbol.symbol}
-                onClick={() => setCurrentSymbol(symbol.symbol)}
-                className={`p-4 bg-gray-800 rounded-lg border transition-all ${
-                  currentSymbol === symbol.symbol
-                    ? 'border-yellow-400 bg-yellow-400/10 shadow-lg'
-                    : 'border-gray-700 hover:border-gray-600'
-                }`}
-              >
-                <div className="font-bold text-white">{symbol.symbol}</div>
-                <div className="text-xs text-gray-400">{symbol.name}</div>
-              </button>
-            ))}
-          </div>
-        </div>
 
-        {/* Signal Section */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-sm text-gray-400 flex items-center gap-2">
-              <span>📡</span> SINAL DA IA MULTI-STRATEGY
-            </h2>
-            <button
-              onClick={generateSignal}
-              disabled={isGenerating}
-              className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg text-sm font-semibold hover:from-purple-700 hover:to-blue-700 transition-all disabled:opacity-50 flex items-center gap-2"
-            >
-              {isGenerating ? (
-                <>
-                  <span className="animate-spin">⚡</span>
-                  Gerando...
-                </>
-              ) : (
-                <>
-                  <span>🎯</span>
-                  Gerar Sinal
-                </>
-              )}
+          <div className="motivation">
+            <div className="mot-icon">🦈</div>
+            <p className="mot-txt">"O tubarão não caça toda hora. Ele espera o momento certo — e quando ataca, não erra."</p>
+          </div>
+
+          <div className="history-section">
+            <div className="hs-title"><i className="fas fa-history"></i> ÚLTIMOS SINAIS</div>
+            <div id="hist-list" className="hist-list">
+              <div className="hist-empty"><p>Os sinais aparecerão aqui</p></div>
+            </div>
+          </div>
+        </section>
+
+        {/* PAGE: PROFILE */}
+        <section id="pg-profile" className="pg">
+          <div className="prof-header">
+            <button className="prof-back" onClick={() => navigate('/dashboard')}>
+              <i className="fas fa-arrow-left"></i> Voltar
             </button>
           </div>
 
-          {signal ? (
-            <div className="bg-gray-800/50 rounded-xl border-2 overflow-hidden">
-              {/* Header */}
-              <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 px-6 py-4 border-b border-gray-700">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">🦈</span>
-                    <div>
-                      <h2 className="text-xl font-bold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
-                        BOT TUBARÃO V4
-                      </h2>
-                      <p className="text-sm text-gray-400">Sinal Multi-Strategy AI</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold px-3 py-1 rounded-full bg-green-500/20 text-green-400">
-                      ATIVO
-                    </span>
-                  </div>
-                </div>
+          <div className="prof-card">
+            <div className="prof-avatar">
+              <div className="prof-av-circle">
+                <span className="prof-av-letter" id="prof-letter">T</span>
               </div>
-
-              {/* Signal Direction */}
-              <div className="p-6">
-                <div className={`text-center py-8 rounded-xl mb-6 ${
-                  signal.direction === 'CALL' 
-                    ? 'bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30' 
-                    : 'bg-gradient-to-r from-red-500/20 to-rose-500/20 border border-red-500/30'
-                }`}>
-                  <div className="text-6xl mb-4">
-                    {signal.direction === 'CALL' ? '📈' : '📉'}
-                  </div>
-                  <span className={`text-5xl font-bold tracking-wider ${
-                    signal.direction === 'CALL' ? 'text-green-400' : 'text-red-400'
-                  }`}>
-                    {signal.direction}
-                  </span>
-                  <div className="mt-4">
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">OPORTUNIDADE DE TRADING</span>
-                    <div className="text-xl font-bold text-yellow-400 mt-2 animate-pulse">
-                      ⚡ SINAL DE ALTA PRECISÃO
-                    </div>
-                  </div>
-                </div>
-
-                {/* Signal Details */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                  <div className="bg-gray-800 rounded-lg p-4 text-center">
-                    <span className="text-xs text-gray-400 uppercase tracking-wider mb-2">ATIVO</span>
-                    <div className="text-lg font-bold text-yellow-400">{signal.symbol}</div>
-                  </div>
-                  <div className="bg-gray-800 rounded-lg p-4 text-center">
-                    <span className="text-xs text-gray-400 uppercase tracking-wider mb-2">TIMEFRAME</span>
-                    <div className="text-lg font-bold text-yellow-400">M5</div>
-                  </div>
-                  <div className="bg-gray-800 rounded-lg p-4 text-center">
-                    <span className="text-xs text-gray-400 uppercase tracking-wider mb-2">EXPIRAÇÃO</span>
-                    <div className="text-lg font-bold text-yellow-400">5 MINUTOS</div>
-                  </div>
-                  <div className="bg-gray-800 rounded-lg p-4 text-center">
-                    <span className="text-xs text-gray-400 uppercase tracking-wider mb-2">HORA</span>
-                    <div className="text-lg font-bold text-yellow-400">
-                      {new Date(signal.created_at).toLocaleTimeString('pt-BR', { 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
-                      })}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Risk Management */}
-                <div className="grid grid-cols-3 gap-4 mb-6">
-                  <div className="bg-gray-800 rounded-lg p-4 text-center">
-                    <span className="text-xs text-gray-400 uppercase tracking-wider mb-2">PREÇO DE ENTRADA</span>
-                    <div className="text-lg font-bold text-blue-400">
-                      ${signal.entry_price}
-                    </div>
-                  </div>
-                  <div className="bg-gray-800 rounded-lg p-4 text-center">
-                    <span className="text-xs text-gray-400 uppercase tracking-wider mb-2">ALVO</span>
-                    <div className="text-lg font-bold text-green-400">
-                      ${signal.target_price}
-                    </div>
-                  </div>
-                  <div className="bg-gray-800 rounded-lg p-4 text-center">
-                    <span className="text-xs text-gray-400 uppercase tracking-wider mb-2">STOP LOSS</span>
-                    <div className="text-lg font-bold text-red-400">
-                      ${signal.stop_loss}
-                    </div>
-                  </div>
-                </div>
-
-                {/* AI Confidence */}
-                <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-lg p-4 mb-6">
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="text-sm text-purple-400 font-semibold">🧠 CONFIANÇA DA IA</span>
-                    <span className="text-2xl font-bold text-yellow-400">
-                      {signal.confidence}%
-                    </span>
-                  </div>
-                  <div className="w-full h-3 bg-gray-700 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full rounded-full transition-all duration-1000"
-                      style={{ 
-                        width: `${signal.confidence}%`,
-                        background: signal.confidence >= 80 
-                          ? 'linear-gradient(90deg, #ffd700, #ff9100, #ff6d00)' 
-                          : signal.confidence >= 60 
-                            ? 'linear-gradient(90deg, #00e676, #00bfa5)' 
-                            : 'linear-gradient(90deg, #ff9100, #ff6d00)'
-                      }}
-                    ></div>
-                  </div>
-                  <div className="flex justify-between text-xs text-gray-400 mt-2">
-                    <span>Fraco</span>
-                    <span>Forte</span>
-                  </div>
-                </div>
-
-                {/* Strategy Analysis */}
-                <div className="bg-gray-800 rounded-lg p-4 mb-6">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm text-gray-400 uppercase tracking-wider">ANÁLISE ESTRATÉGICA</span>
-                    <span className="text-xs font-bold text-yellow-400">{signal.strategy}</span>
-                  </div>
-                  <div className="space-y-2">
-                    {signal.reasons.map((reason: string, index: number) => (
-                      <div key={index} className="flex items-start gap-3">
-                        <span className="text-green-400 mt-1">✓</span>
-                        <span className="text-sm text-gray-300">{reason}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Potential Return */}
-                <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-lg p-4 mb-6">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-400 uppercase tracking-wider">POTENCIAL DE RETORNO</span>
-                    <span className="text-2xl font-bold text-yellow-400">
-                      +{signal.potential_return}%
-                    </span>
-                  </div>
-                  <div className="text-xs text-gray-400 mt-2">
-                    Baseado na volatilidade atual do mercado
-                  </div>
-                </div>
-
-                {/* Countdown */}
-                <div className="bg-gradient-to-r from-red-500/10 to-orange-500/10 border border-red-500/20 rounded-lg p-4 text-center">
-                  <span className="text-sm text-gray-400 uppercase tracking-wider mb-2 block">EXPIRA EM</span>
-                  <div className="text-3xl font-bold text-red-400">
-                    {(() => {
-                      const expiry = new Date(signal.expiry_time)
-                      const now = new Date()
-                      const diff = expiry.getTime() - now.getTime()
-                      
-                      if (diff <= 0) return '00:00'
-                      
-                      const minutes = Math.floor(diff / 60000)
-                      const seconds = Math.floor((diff % 60000) / 1000)
-                      
-                      return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
-                    })()}
-                  </div>
-                  <div className="text-xs text-gray-400 mt-2">
-                    ⏰ Agora é o momento de agir!
-                  </div>
-                </div>
-              </div>
+              <div className="prof-av-badge" id="prof-plan-badge">PRO</div>
             </div>
-          ) : (
-            <div className="bg-gray-800/50 rounded-xl border-2 border-gray-700 overflow-hidden">
-              <div className="bg-gray-800 px-4 py-3 flex justify-between items-center border-b border-gray-700">
-                <div className="flex items-center gap-2">
-                  <span className="text-purple-400">📡</span>
-                  <span className="text-sm text-gray-400 uppercase tracking-wider">AGUARDANDO SINAL</span>
-                </div>
-                <span className="text-xs font-bold px-3 py-1 rounded-full bg-gray-700 text-gray-300">
-                  IA ANALISANDO
-                </span>
-              </div>
-              
-              <div className="p-8 text-center">
-                <div className="text-6xl mb-6">🦈</div>
-                <h3 className="text-xl font-bold text-gray-300 mb-2">A IA está analisando o mercado</h3>
-                <p className="text-gray-400 mb-6">
-                  Integrando 3 estratégias avançadas para encontrar a melhor oportunidade
-                </p>
-                <div className="flex justify-center gap-4 text-sm text-gray-500">
-                  <span>🎯 Cazador Leve</span>
-                  <span>⚡ Hiper Alpha</span>
-                  <span>🦈 Tubarão V3</span>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Trading History */}
-        <div>
-          <h2 className="text-sm text-gray-400 mb-4 flex items-center gap-2">
-            <span>📝</span> HISTÓRICO DE SINAIS
-          </h2>
-          <div className="bg-gray-800/50 rounded-xl border border-gray-700 overflow-hidden">
-            {tradingHistory.length > 0 ? (
-              <div className="divide-y divide-gray-700">
-                {tradingHistory.map((signal, index) => (
-                  <div key={signal.id} className="p-4 flex justify-between items-center">
-                    <div className="flex items-center gap-3">
-                      <span className="text-xl">
-                        {signal.direction === 'CALL' ? '📈' : '📉'}
-                      </span>
-                      <div>
-                        <div className="font-bold text-white">{signal.symbol}</div>
-                        <div className="text-xs text-gray-400">
-                          {new Date(signal.created_at).toLocaleDateString('pt-BR')}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className={`text-sm font-bold ${
-                        signal.direction === 'CALL' ? 'text-green-400' : 'text-red-400'
-                      }`}>
-                        {signal.direction}
-                      </div>
-                      <div className="text-xs text-gray-400">
-                        {signal.confidence}% confiança
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="p-6 text-center text-gray-500">
-                <div className="text-4xl mb-4">📊</div>
-                <p>Os sinais aparecerão aqui</p>
-                <p className="text-sm text-gray-400 mt-2">Histórico completo de operações</p>
-              </div>
-            )}
+            <h2 className="prof-name" id="prof-name">Trader</h2>
+            <p className="prof-email" id="prof-email">email@email.com</p>
           </div>
-        </div>
+
+          <div className="prof-section">
+            <div className="prof-s-title"><i className="fas fa-id-card"></i> INFORMAÇÕES</div>
+            <div className="prof-item">
+              <span className="pi-label">Nome completo</span>
+              <span className="pi-value" id="pi-name">--</span>
+            </div>
+            <div className="prof-item">
+              <span className="pi-label">Email</span>
+              <span className="pi-value" id="pi-email">--</span>
+            </div>
+            <div className="prof-item">
+              <span className="pi-label">Plano atual</span>
+              <span className="pi-value gold" id="pi-plan">--</span>
+            </div>
+            <div className="prof-item">
+              <span className="pi-label">Membro desde</span>
+              <span className="pi-value" id="pi-since">--</span>
+            </div>
+            <div className="prof-item">
+              <span className="pi-label">Status</span>
+              <span className="pi-value green">✅ Ativo</span>
+            </div>
+          </div>
+
+          <div className="prof-section">
+            <div className="prof-s-title"><i className="fas fa-crown"></i> SEU PLANO</div>
+            <div className="prof-plan-box" id="prof-plan-box">
+              <div className="ppb-icon">💎</div>
+              <div className="ppb-info">
+                <h3 id="ppb-name">PRO</h3>
+                <p id="ppb-desc">Todos os ativos • Sinais ULTRA</p>
+              </div>
+              <div className="ppb-status">ATIVO</div>
+            </div>
+            <a href="https://wa.me/258835333667?text=Olá! Quero fazer upgrade do meu plano no Bot Tubarão V3" target="_blank" className="prof-upgrade">
+              <i className="fas fa-arrow-up"></i> Fazer Upgrade
+            </a>
+          </div>
+
+          <div className="prof-section">
+            <div className="prof-s-title"><i className="fas fa-headset"></i> SUPORTE</div>
+            <a href="https://wa.me/258835333667" target="_blank" className="prof-support">
+              <i className="fab fa-whatsapp"></i> Falar com suporte via WhatsApp
+            </a>
+          </div>
+
+          <button className="prof-logout" onClick={handleLogout}>
+            <i className="fas fa-sign-out-alt"></i> Sair da conta
+          </button>
+        </section>
       </main>
     </div>
   )
