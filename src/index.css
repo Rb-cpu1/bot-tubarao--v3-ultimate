@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Bot Tubarão V3 — IA Trading System */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --b0: #030508;
+  --b1: #060a12;
+  --b2: #0a1019;
+  --b3: #0f1724;
+  --b4: #141e30;
+  --ac: #00d4ff;
+  --ac2: #7c4dff;
+  --gn: #00e676;
+  --gn2: rgba(0, 230, 118, 0.12);
+  --rd: #ff1744;
+  --rd2: rgba(255, 23, 68, 0.12);
+  --or: #ff9100;
+  --gd: #ffd700;
+  --t1: #fff;
+  --t2: #8899aa;
+  --t3: #4a5a6a;
+  --br: #152030;
+  --gb: linear-gradient(135deg, #00d4ff, #7c4dff);
+  --gg: linear-gradient(135deg, #00e676, #00bfa5);
+  --gr: linear-gradient(135deg, #ff1744, #d50000);
+  --go: linear-gradient(135deg, #ffd700, #ff9100);
+  --gm: linear-gradient(135deg, #ffd700 0%, #ff9100 50%, #ff6d00 100%);
+  --r: 16px;
+  --rs: 12px;
+}
+
+body {
+  font-family: 'Rajdhani', sans-serif;
+  background: var(--b1);
+  color: var(--t1);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hide {
+  display: none !important;
+}
+
+/* Add remaining CSS styles from original file */
