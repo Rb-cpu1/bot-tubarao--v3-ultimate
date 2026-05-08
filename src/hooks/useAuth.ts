@@ -9,9 +9,9 @@ export const useAuth = () => {
 }
 
 export const useAuthActions = () => {
-  const { user, profile, loading, logout } = useAuth()
+  const { user, profile, loading, logout, authReady } = useAuth()
   
-  const isAuthenticated = !!user && !loading
+  const isAuthenticated = !!user && !loading && authReady
   const hasProfile = !!profile
   
   return {
@@ -21,6 +21,7 @@ export const useAuthActions = () => {
     logout,
     isAuthenticated,
     hasProfile,
+    authReady,
     userName: profile?.name || user?.email?.split('@')[0] || 'Trader',
     userPlan: profile?.plan || 'Básico'
   }

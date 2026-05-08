@@ -10,9 +10,8 @@ import AdvancedSignalPanel from '../components/AdvancedSignalPanel'
 const DashboardPage: React.FC = () => {
   const [currentSymbol, setCurrentSymbol] = useState('EURUSD')
   const [muted, setMuted] = useState(false)
-  const [showStrategies, setShowStrategies] = useState(false)
   const navigate = useNavigate()
-  const { userName, userPlan, logout } = useAuthActions()
+  const { userName, userPlan, logout, loading: authLoading } = useAuthActions()
   const { 
     currentSignal, 
     marketData, 
@@ -53,6 +52,20 @@ const DashboardPage: React.FC = () => {
   }
 
   const symbolInfo = getSymbolInfo(currentSymbol)
+
+  // Se estiver carregando, mostrar tela de carregamento
+  if (authLoading || loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900">
+        <div className="text-center">
+          <div className="text-6xl mb-6">🦈</div>
+          <LoadingSpinner size="lg" className="mb-4" />
+          <p className="text-white text-xl font-bold">Carregando dashboard...</p>
+          <p className="text-gray-300 text-sm mt-2">Aguarde um momento</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900">
@@ -161,7 +174,7 @@ const DashboardPage: React.FC = () => {
             </h2>
             <button
               onClick={handleGenerateSignal}
-              disabled={isGenerating || loading}
+              disabled={isGenerating}
               className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg text-sm font-semibold hover:from-purple-700 hover:to-blue-700 transition-all disabled:opacity-50 flex items-center gap-2"
             >
               {isGenerating ? (

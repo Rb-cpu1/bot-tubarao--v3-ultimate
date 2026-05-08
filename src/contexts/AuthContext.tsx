@@ -22,18 +22,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [authReady, setAuthReady] = useState(false)
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user || null)
-      if (session?.user) {
-        loadUserProfile(session.user.id)
+    // Initialize auth quickly
+    const initializeAuth = async () => {
+      try {
+        // Get initial session
+        const { data: { session } } = await supabase.auth.getSession()
+        setUser(session?.user || null)
+        
+        if (session?.user) {
+          await loadUserProfile(session.user.id)
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error)
+      } finally {
+        setLoading(false)
+        setAuthReady(true)
       }
-      setLoading(false)
-    })
+    }
 
-    // Listen for auth changes
+    initializeAuth()
+
+    // Listen for auth changes with shorter timeout
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user || null)
       if (session?.user) {
@@ -41,7 +53,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         setProfile(null)
       }
-      setLoading(false)
     })
 
     return () => subscription.unsubscribe()
@@ -64,7 +75,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     profile,
     loading,
-    logout
+    logout,
+    authReady // Adicionado para verificar se o auth está pronto
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -11,14 +11,25 @@ import LoadingSpinner from './components/LoadingSpinner'
 
 function App() {
   const [isInitialized, setIsInitialized] = useState(false)
+  const [authInitialized, setAuthInitialized] = useState(false)
 
   useEffect(() => {
     // Initialize app with splash screen
     const timer = setTimeout(() => {
       setIsInitialized(true)
-    }, 2000)
+    }, 1000) // Reduzido para 1 segundo
     return () => clearTimeout(timer)
   }, [])
+
+  // Verificar se o auth está pronto
+  useEffect(() => {
+    if (isInitialized) {
+      const authTimer = setTimeout(() => {
+        setAuthInitialized(true)
+      }, 500) // Tempo adicional para auth carregar
+      return () => clearTimeout(authTimer)
+    }
+  }, [isInitialized])
 
   if (!isInitialized) {
     return (
@@ -28,6 +39,19 @@ function App() {
           <LoadingSpinner size="lg" className="mb-4" />
           <p className="text-white text-xl font-bold">Iniciando Bot Tubarão V4...</p>
           <p className="text-gray-300 text-sm mt-2">Multi-Strategy Intelligence System</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!authInitialized) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900">
+        <div className="text-center">
+          <div className="text-6xl mb-6">🦈</div>
+          <LoadingSpinner size="lg" className="mb-4" />
+          <p className="text-white text-xl font-bold">Carregando sistema...</p>
+          <p className="text-gray-300 text-sm mt-2">Aguarde um momento</p>
         </div>
       </div>
     )
