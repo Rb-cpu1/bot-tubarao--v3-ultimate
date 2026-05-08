@@ -11,12 +11,10 @@ const DashboardPage: React.FC = () => {
 
   // Simulação de dados do mercado
   const symbols = [
-    { symbol: 'EURUSD', name: 'Euro/Dólar', type: 'forex' },
-    { symbol: 'GBPUSD', name: 'Libra/Dólar', type: 'forex' },
-    { symbol: 'USDJPY', name: 'Dólar/Yen', type: 'forex' },
-    { symbol: 'BTCUSD', name: 'Bitcoin/Dólar', type: 'crypto' },
-    { symbol: 'ETHUSD', name: 'Ethereum/Dólar', type: 'crypto' },
-    { symbol: 'XAUUSD', name: 'Ouro/Dólar', type: 'commodity' }
+    { symbol: 'EURUSD', name: 'Euro/Dólar' },
+    { symbol: 'GBPUSD', name: 'Libra/Dólar' },
+    { symbol: 'USDJPY', name: 'Dólar/Yen' },
+    { symbol: 'BTCUSD', name: 'Bitcoin/Dólar' }
   ]
 
   // Simular dados do mercado
@@ -74,70 +72,16 @@ const DashboardPage: React.FC = () => {
     setIsGenerating(false)
   }
 
-  // Auto-gerar sinal a cada 5 minutos
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (!signal) {
-        generateSignal()
-      }
-    }, 5 * 60 * 1000)
-
-    return () => clearInterval(interval)
-  }, [signal])
-
   const handleLogout = () => {
+    localStorage.removeItem('currentUser')
     navigate('/')
-  }
-
-  const getSymbolTypeColor = (type: string) => {
-    switch (type) {
-      case 'forex': return 'text-green-400'
-      case 'crypto': return 'text-purple-400'
-      case 'commodity': return 'text-yellow-400'
-      default: return 'text-gray-400'
-    }
-  }
-
-  const formatTime = (timeString: string) => {
-    return new Date(timeString).toLocaleTimeString('pt-BR', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    })
-  }
-
-  const formatCountdown = (expiryTime: string) => {
-    const expiry = new Date(expiryTime)
-    const now = new Date()
-    const diff = expiry.getTime() - now.getTime()
-    
-    if (diff <= 0) return '00:00'
-    
-    const minutes = Math.floor(diff / 60000)
-    const seconds = Math.floor((diff % 60000) / 1000)
-    
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
-  }
-
-  const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 80) return 'text-yellow-400'
-    if (confidence >= 60) return 'text-green-400'
-    return 'text-orange-400'
-  }
-
-  const getRiskColor = (risk: string) => {
-    switch (risk) {
-      case 'low': return 'text-green-400'
-      case 'medium': return 'text-yellow-400'
-      case 'high': return 'text-red-400'
-      default: return 'text-gray-400'
-    }
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900">
       {/* Header */}
-      <header className="bg-gray-800/90 backdrop-blur-md border-b border-gray-700 p-4 sticky top-0 z-50">
-        <div className="flex justify-between items-center max-w-7xl mx-auto">
+      <header className="bg-gray-800/90 backdrop-blur-md border-b border-gray-700 p-4">
+        <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
             <span className="text-3xl">🦈</span>
             <div>
@@ -186,7 +130,6 @@ const DashboardPage: React.FC = () => {
             <div className="flex items-center gap-3 bg-gradient-to-r from-green-500/20 to-emerald-500/20 px-4 py-2 rounded-full border border-green-500/30">
               <span className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></span>
               <span className="text-sm text-green-400 font-semibold">MERCADO ATIVO</span>
-              <span className="text-xs text-green-300">24/7</span>
             </div>
           </div>
           
@@ -220,7 +163,7 @@ const DashboardPage: React.FC = () => {
             </div>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {symbols.map((symbol) => (
               <button
                 key={symbol.symbol}
@@ -231,21 +174,8 @@ const DashboardPage: React.FC = () => {
                     : 'border-gray-700 hover:border-gray-600'
                 }`}
               >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="font-bold text-white">{symbol.symbol}</div>
-                  <span className={`text-sm ${getSymbolTypeColor(symbol.type)}`}>
-                    {symbol.type === 'forex' ? '🌐' : symbol.type === 'crypto' ? '₿' : '🏅'}
-                  </span>
-                </div>
+                <div className="font-bold text-white">{symbol.symbol}</div>
                 <div className="text-xs text-gray-400">{symbol.name}</div>
-                {marketData && marketData.symbol === symbol.symbol && (
-                  <div className="mt-2 text-xs">
-                    <span className="text-green-400">${marketData.price}</span>
-                    <span className={`ml-2 ${parseFloat(marketData.change) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {parseFloat(marketData.change) >= 0 ? '↑' : '↓'} {Math.abs(parseFloat(marketData.change)) * 100}%
-                    </span>
-                  </div>
-                )}
               </button>
             ))}
           </div>
@@ -291,9 +221,6 @@ const DashboardPage: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className={`text-xs font-bold px-3 py-1 rounded-full ${getRiskColor(signal.risk_level)} bg-opacity-20`}>
-                      RISCO {signal.risk_level.toUpperCase()}
-                    </span>
                     <span className="text-xs font-bold px-3 py-1 rounded-full bg-green-500/20 text-green-400">
                       ATIVO
                     </span>
@@ -340,7 +267,12 @@ const DashboardPage: React.FC = () => {
                   </div>
                   <div className="bg-gray-800 rounded-lg p-4 text-center">
                     <span className="text-xs text-gray-400 uppercase tracking-wider mb-2">HORA</span>
-                    <div className="text-lg font-bold text-yellow-400">{formatTime(signal.created_at)}</div>
+                    <div className="text-lg font-bold text-yellow-400">
+                      {new Date(signal.created_at).toLocaleTimeString('pt-BR', { 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                      })}
+                    </div>
                   </div>
                 </div>
 
@@ -370,7 +302,7 @@ const DashboardPage: React.FC = () => {
                 <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-lg p-4 mb-6">
                   <div className="flex justify-between items-center mb-3">
                     <span className="text-sm text-purple-400 font-semibold">🧠 CONFIANÇA DA IA</span>
-                    <span className={`text-2xl font-bold ${getConfidenceColor(signal.confidence)}`}>
+                    <span className="text-2xl font-bold text-yellow-400">
                       {signal.confidence}%
                     </span>
                   </div>
@@ -426,7 +358,18 @@ const DashboardPage: React.FC = () => {
                 <div className="bg-gradient-to-r from-red-500/10 to-orange-500/10 border border-red-500/20 rounded-lg p-4 text-center">
                   <span className="text-sm text-gray-400 uppercase tracking-wider mb-2 block">EXPIRA EM</span>
                   <div className="text-3xl font-bold text-red-400">
-                    {formatCountdown(signal.expiry_time)}
+                    {(() => {
+                      const expiry = new Date(signal.expiry_time)
+                      const now = new Date()
+                      const diff = expiry.getTime() - now.getTime()
+                      
+                      if (diff <= 0) return '00:00'
+                      
+                      const minutes = Math.floor(diff / 60000)
+                      const seconds = Math.floor((diff % 60000) / 1000)
+                      
+                      return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+                    })()}
                   </div>
                   <div className="text-xs text-gray-400 mt-2">
                     ⏰ Agora é o momento de agir!
