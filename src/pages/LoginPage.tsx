@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createUser, loginUser } from '../services/supabase'
+import { useToast } from '../hooks/useToast'
+import LoadingSpinner from '../components/LoadingSpinner'
 
 const LoginPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login')
@@ -8,6 +10,7 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const navigate = useNavigate()
+  const { showError, showSuccess } = useToast()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -20,9 +23,12 @@ const LoginPage: React.FC = () => {
 
     try {
       await loginUser(email, password)
+      showSuccess('Login realizado com sucesso!')
       navigate('/dashboard')
     } catch (err: any) {
-      setError(err.message || 'Erro ao fazer login')
+      const errorMessage = err.message || 'Erro ao fazer login'
+      setError(errorMessage)
+      showError(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -41,10 +47,13 @@ const LoginPage: React.FC = () => {
 
     try {
       await createUser(email, password, name, activationCode)
+      showSuccess('Conta ativada com sucesso!')
       setSuccess('Conta ativada! Faça login.')
       setActiveTab('login')
     } catch (err: any) {
-      setError(err.message || 'Erro ao criar conta')
+      const errorMessage = err.message || 'Erro ao criar conta'
+      setError(errorMessage)
+      showError(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -107,9 +116,19 @@ const LoginPage: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50"
+              className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              {loading ? 'Entrando...' : 'Acessar Sistema'}
+              {loading ? (
+                <>
+                  <LoadingSpinner size="sm" />
+                  Entrando...
+                </>
+              ) : (
+                <>
+                  <span>🔐</span>
+                  Acessar Sistema
+                </>
+              )}
             </button>
             <p className="text-center text-gray-400">
               Não tem conta?{' '}
@@ -163,9 +182,19 @@ const LoginPage: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50"
+              className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              {loading ? 'Ativando...' : 'Ativar Agora'}
+              {loading ? (
+                <>
+                  <LoadingSpinner size="sm" />
+                  Ativando...
+                </>
+              ) : (
+                <>
+                  <span>🚀</span>
+                  Ativar Agora
+                </>
+              )}
             </button>
           </form>
         )}

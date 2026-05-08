@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
+import { useAuthActions } from '../hooks/useAuth'
+import { useToast } from '../hooks/useToast'
+import LoadingSpinner from '../components/LoadingSpinner'
 
 interface Asset {
   pair: string
@@ -21,8 +23,10 @@ const DashboardPage: React.FC = () => {
   const [signal, setSignal] = useState<Signal | null>(null)
   const [countdown, setCountdown] = useState(0)
   const [muted, setMuted] = useState(false)
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-  const { profile } = useAuth()
+  const { userName, userPlan, logout } = useAuthActions()
+  const { showError, showSuccess } = useToast()
 
   const assets: Asset[] = [
     { pair: 'EUR/USD', flag: '🇪🇺🇺🇸', price: 1.0852 },
@@ -85,11 +89,23 @@ const DashboardPage: React.FC = () => {
   }
 
   const handleLogout = async () => {
-    // Implement logout logic
-    navigate('/')
+    try {
+      await logout()
+      showSuccess('Logout realizado com sucesso!')
+      navigate('/')
+    } catch (error) {
+      showError('Erro ao realizar logout')
+    }
   }
 
-  const userName = profile?.name || 'Trader'
+  const handleGenerateSignal = () => {
+    setLoading(true)
+    setTimeout(() => {
+      generateSignal()
+      setLoading(false)
+      showSuccess('Novo sinal gerado!')
+    }, 2000)
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 to-purple-900">
@@ -208,6 +224,23 @@ const DashboardPage: React.FC = () => {
                   <div className="text-4xl mb-4">🦈</div>
                   <p className="text-sm text-gray-400 mb-2">A IA está analisando o mercado...</p>
                   <p className="text-xs text-gray-500">Aguarde o próximo sinal de alta precisão</p>
+                  <button
+                    onClick={handleGenerateSignal}
+                    disabled={loading}
+                    className="mt-4 px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2 mx-auto"
+                  >
+                    {loading ? (
+                      <>
+                        <LoadingSpinner size="sm" />
+                        Gerando sinal...
+                      </>
+                    ) : (
+                      <>
+                        <span>🎯</span>
+                        Gerar Sinal Agora
+                      </>
+                    )}
+                  </button>
                 </div>
               ) : (
                 <div>
